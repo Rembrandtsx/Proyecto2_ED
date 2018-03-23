@@ -1,7 +1,7 @@
-# T6_201810
-![Taller 6](/img/banner.png)
+# Poryecto 2 201810 Team 6
+![Proyecto2](/img/banner.png)
 
-# Integrante 1
+# Integrante 1 B
 
 NOMBRE: Camilo Andres Salinas Martinez.
 
@@ -11,7 +11,7 @@ CODIGO: 201714930.
 
 
 
-# Integrante 2
+# Integrante 2 A
 
 NOMBRE: Laura Isabella Forero Camacho.
 

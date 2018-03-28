@@ -198,7 +198,6 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			}
 			
 			
-			
 			public Taxi estaAgregadoTaxi(Taxi[] a, String id){
 				Taxi actual;
 				for(int i=1; i<a.length;i++){
@@ -244,7 +243,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 
 			// METODOS DE REQUERIMIENTOS
 			
-			// 1A
+			// 1A PROYECTO 2
 			@Override
 			public LinkedSimpleList<Servicio> darServiciosEnAreaOrdenCronologico(int pArea) {
 				// TODO Auto-generated method stub

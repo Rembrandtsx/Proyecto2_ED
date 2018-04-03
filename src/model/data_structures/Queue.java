@@ -2,7 +2,7 @@ package model.data_structures;
 
 import java.util.Iterator;
 
-public class Queue<T extends Comparable<T>> implements IQueue<T>{
+public class Queue<T extends Comparable<T>> implements IQueue<T>, Iterable<T>{
 
 	
 	private SimpleNode<T> end;
@@ -70,6 +70,12 @@ public class Queue<T extends Comparable<T>> implements IQueue<T>{
 	public int size(){
 		
 		return this.size;
+	}
+
+	@Override
+	public Iterator<T> iterator() {
+		// TODO Auto-generated method stub
+		return (Iterator<T>) this;
 	}
 
 	

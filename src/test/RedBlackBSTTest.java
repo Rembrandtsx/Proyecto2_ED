@@ -5,6 +5,7 @@ import java.util.Iterator;
 import junit.framework.TestCase;
 import model.data_structures.LinkedSimpleList;
 import model.data_structures.Queue;
+import model.data_structures.RedBlackBST;
 import model.data_structures.SimpleNodeSymbolTable;
 import model.data_structures.SymbolTableLP;
 import model.data_structures.SymbolTableSC;
@@ -17,56 +18,56 @@ import model.data_structures.SymbolTableSC;
 public class RedBlackBSTTest extends TestCase
 {
 
-    private SymbolTableSC<Integer, String> hashTable;
+    private RedBlackBST<Integer, String> redBlackBST;
 
     
     private int size;
     
-    private int capacity;
+    
 
     // -----------------------------------------------------------------
     // M�todos
     // -----------------------------------------------------------------
 
     /**
-     * Construye una nueva hash Table LP vacia
+     * Construye un redBlackBST vacio
      * 
      */
     private void setupEscenario1( )
     {
-    	capacity=101;
-        hashTable = new SymbolTableSC<>(capacity);
+    	
+        redBlackBST = new RedBlackBST<>();
         size = 0;
 
     }
 
     /**
-     * Construye una nueva hash Table LP con 10 elementos
+     * Construye un redBlackBST con 10 elementos
      * 
      */
     private void setupEscenario2( )
     {
-    	capacity=101;
-        hashTable = new SymbolTableSC<>(capacity);
+    	
+        redBlackBST = new RedBlackBST<>();
         size = 10;
         for( int cont = 0; cont < size; cont++ )
         {
-            hashTable.put(cont, "Test " + cont);
+            redBlackBST.put(cont, "Test " + cont);
         }
     }
 
     /**
-     * Construye una nueva hash Table LP con 100 elementos
+     * Construye un redBlackBST con 100 elementos
      * 
      */
     private void setupEscenario3( )
     {
-    	capacity=101;
-        hashTable = new SymbolTableSC<>(capacity);
+    	
+        redBlackBST = new RedBlackBST<>();
         size = 101;
-        for( int cont = 0; cont < size; cont++ )
+        for( int cont = size; cont > 0; cont--)
         {
-            hashTable.put(cont, "Test " + cont);
+            redBlackBST.put(cont, "Test " + cont);
         }
     }
 
@@ -80,36 +81,34 @@ public class RedBlackBSTTest extends TestCase
         size = 11;
         for( int cont = 0; cont < size; cont++ )
         {
-            hashTable.put(cont, "Test " + cont);
+            redBlackBST.put(cont, "Test " + cont);
         }
         // Verifica que la informaci�n sea correcta
-        assertEquals( "La adici�n no se realiz� correctamente", hashTable.get(0), "Test 0" );
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(0), "Test 0" );
         
-        assertEquals( "La adici�n no se realiz� correctamente", hashTable.get(3), "Test 3" );
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(3), "Test 3" );
         
-        assertEquals( "La adici�n no se realiz� correctamente", hashTable.get(7), "Test 7" );
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(7), "Test 7" );
         
-        assertEquals( "La adici�n no se realiz� correctamente", hashTable.get(10), "Test 10" );
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(10), "Test 10" );
         
-        assertEquals( "La adici�n no se realiz� correctamente", hashTable.get(20), null );
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(20), null );
         
         // Verifica que la informaci�n sea correcta, cuando la llave ya existe
         
-        hashTable.put(0, "Test " + 54);
-        hashTable.put(0, "Test " + 32);
-        hashTable.put(0, "Test " + 10);
-        size=size+3;
-        LinkedSimpleList<SimpleNodeSymbolTable<Integer, String>> lista= hashTable.getNode(0);
+        redBlackBST.put(0, "Test " + 54);
+        redBlackBST.put(0, "Test " + 32);
+        redBlackBST.put(0, "Test " + 10);
         
         
-     // Prueban las colisiones, con el metodo getNode que retorna la lista con los objetos que tienen la misma key
-        assertEquals( "La adici�n no se realiz� correctamente", hashTable.getNode(0).get(0).getElement(), "Test 0" );
-        assertEquals( "La adici�n no se realiz� correctamente", hashTable.getNode(0).get(1).getElement(), "Test 54" );
-        assertEquals( "La adici�n no se realiz� correctamente", hashTable.getNode(0).get(2).getElement(), "Test 32" );
-        assertEquals( "La adici�n no se realiz� correctamente", hashTable.getNode(0).get(3).getElement(), "Test 10" );
+        redBlackBST.put(100, "Test " + 100);
+        size ++;
+        // Prueban las colisiones, con el metodo getNode que retorna la lista con los objetos que tienen la misma key
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(0), "Test 10" );
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(100), "Test 100" );
         
         // Verifica el tamaño
-        assertEquals( "El tamaño no es el correcto", size, hashTable.size( ) );
+        assertEquals( "El tamaño no es el correcto", size, redBlackBST.size( ) );
     
     }
 
@@ -122,25 +121,27 @@ public class RedBlackBSTTest extends TestCase
         size = 11;
         for( int cont = 0; cont < size; cont++ )
         {
-            hashTable.put(cont, "Test " + cont);
+            redBlackBST.put(cont, "Test " + cont);
         }
         
 
-        hashTable.delete(4);
-        hashTable.delete(7);
+        redBlackBST.delete(4);
+        redBlackBST.delete(7);
         
             // Verifica que la informaci�n sea correcta
-        assertEquals( "No se borro correctamente", hashTable.get(4), null );
-        assertEquals( "No se borro correctamente", hashTable.get(7), null );
+        assertEquals( "No se borro correctamente", redBlackBST.get(4), null );
+        assertEquals( "No se borro correctamente", redBlackBST.get(7), null );
         
-        hashTable.delete(4);
-        hashTable.delete(10);
-       
-        assertEquals( "No se borro correctamente", hashTable.get(4), null );
-        assertEquals( "No se borro correctamente", hashTable.get(10), null );
+        redBlackBST.delete(4);
+        redBlackBST.delete(10);
+        redBlackBST.delete(2);
+        redBlackBST.delete(1);
+        
+        assertEquals( "No se borro correctamente", redBlackBST.get(4), null );
+        assertEquals( "No se borro correctamente", redBlackBST.get(10), null );
         
          // Verifica el tamaño
-            assertEquals( "El tamaño no es el correcto", size-3, hashTable.size( ) );
+        assertEquals( "El tamaño no es el correcto", size-5, redBlackBST.size( ) );
         
 
     }
@@ -153,46 +154,32 @@ public class RedBlackBSTTest extends TestCase
     {
     	setupEscenario2( );
         
-
+    	for( int cont = 0; cont < size; cont++ )
+        {
+    		assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.get(cont), "Test "+ cont);
+        	
+        }
         
             // Verifica que la informaci�n sea correcta
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.get(4), "Test 4");
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.get(0), "Test 0");
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.get(8), "Test 8");
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.get(2), "Test 2");
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.get(10), null);
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.get(50), null);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.get(4), "Test 4");
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.get(0), "Test 0");
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.get(8), "Test 8");
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.get(2), "Test 2");
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.get(10), null);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.get(50), null);
             
         	
         	
-        	// Verifica obtener lista, a partir de las colisiones
-        	hashTable.put(0, "Test " + 54);
-            hashTable.put(0, "Test " + 32);
-            hashTable.put(0, "Test " + 10);
-            
-            hashTable.put(7, "Test " + 54);
-            hashTable.put(7, "Test " + 32);
-            hashTable.put(7, "Test " + 10);
-            
-            size=size+6;
-            LinkedSimpleList<SimpleNodeSymbolTable<Integer, String>> lista= hashTable.getNode(0);
-            
-            LinkedSimpleList<SimpleNodeSymbolTable<Integer, String>> lista2= hashTable.getNode(7);
+        	// Verifica put si la llave ya esta agregada
+        	redBlackBST.put(0, "Test " + 54);
+            redBlackBST.put(7, "Test " + 54);
             
          // Prueban las colisiones, con el metodo getNode que retorna la lista con los objetos que tienen la misma key
-            assertEquals( "La adici�n no se realiz� correctamente", lista.get(0).getElement(), "Test 0" );
-            assertEquals( "La adici�n no se realiz� correctamente", lista.get(1).getElement(), "Test 54" );
-            assertEquals( "La adici�n no se realiz� correctamente", lista.get(2).getElement(), "Test 32" );
-            assertEquals( "La adici�n no se realiz� correctamente", lista.get(3).getElement(), "Test 10" );
-            
-        	
-            assertEquals( "La adici�n no se realiz� correctamente", lista2.get(0).getElement(), "Test 7" );
-            assertEquals( "La adici�n no se realiz� correctamente", lista2.get(1).getElement(), "Test 54" );
-            assertEquals( "La adici�n no se realiz� correctamente", lista2.get(2).getElement(), "Test 32" );
-            assertEquals( "La adici�n no se realiz� correctamente", lista2.get(3).getElement(), "Test 10" );
+            assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(0), "Test 54" );
+            assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(0), "Test 54" );
             
             // Verifica que el tamaño
-            assertEquals( "El tamaño no es el correcto", size, hashTable.size( ) );
+            assertEquals( "El tamaño no es el correcto", size, redBlackBST.size( ) );
          
 
    
@@ -207,44 +194,45 @@ public class RedBlackBSTTest extends TestCase
         setupEscenario3( );
         
      // Verifica que el tamaño
-        assertEquals( "El tamaño no es el correcto", size, hashTable.size( ) );
+        assertEquals( "El tamaño no es el correcto", size, redBlackBST.size( ) );
       
         
-        hashTable.put( 50, "Test 74");
-        size=size+1;
+        redBlackBST.put( 50, "Test 74");
+        
+     // Verifica que el tamaño
+        assertEquals( "El tamaño no es el correcto", size, redBlackBST.size( ) );
      
-        // Verifica que el tamaño
-        assertEquals( "El tamaño no es el correcto", size, hashTable.size( ) );
      
-     
-        hashTable.delete(54);
-        hashTable.delete(64);
-        hashTable.delete(100);
+        redBlackBST.delete(54);
+        redBlackBST.delete(64);
+        redBlackBST.delete(100);
         size=size-3;
      // Verifica que el tamaño
-        assertEquals( "El tamaño no es el correcto", size, hashTable.size( ) );
+        assertEquals( "El tamaño no es el correcto", size, redBlackBST.size( ) );
       
     }
 
     /**
-     * Prueba reHash
+     * Prueba Estructura
      * 
      * */
-    public void testReHash( )
+    public void testEstructura( )
     {
-    	setupEscenario1();
     	
-    	capacity=101;
-        size = 607; ///Numero para el cual hay sobrecarga, se aplica rehash
+    	setupEscenario1();
+    	///Se utiliza un ejemplo con 10 elementos
+    	size = 20; ///Numero para el cual hay sobrecarga, se aplica rehash
         for( int cont = 0; cont < size; cont++ )
         {
-            hashTable.put(cont, "Test " + cont);
+            redBlackBST.put(cont, "Test " + cont);
         }
-        capacity= obtieneNumPrimo(capacity);
+      ///Se agregan elementos aleatorios
+    	
+        
+        
+        
      // Verifica que el tamaño
-        assertEquals( "El tamaño no es el correcto", size, hashTable.size( ) );
-     // Verifica la carga
-        assertEquals( "La capacidad no es el correcto", capacity, hashTable.capacity() );
+        assertEquals( "El tamaño no es el correcto", size, redBlackBST.size( ) );
         
         
     }
@@ -256,19 +244,20 @@ public class RedBlackBSTTest extends TestCase
     {
         setupEscenario2( );
         
-        Iterator<Integer> listaLlaves= hashTable.Keys();
+        Queue<Integer> listaLlaves=  (Queue<Integer>) redBlackBST.keys();
         
-        int i=0;
-		while(listaLlaves.hasNext()) {
-			
-			assertEquals( "La información de los elementos esta mal",(int) listaLlaves.next(), i);
-			
+       Integer i=0;
+       Integer current= listaLlaves.dequeue();
+		while(current!=null) {
+			assertEquals( "La información de los elementos esta mal", current, i);
 			i++;
-		}
+			current= listaLlaves.dequeue();
+		}	
+			
 		
 		
 		// Verifica que el tamaño
-        assertEquals( "El tamaño de la lista no es el correcto", size, hashTable.size( ) );
+        assertEquals( "El tamaño de la lista no es el correcto", size, redBlackBST.size( ) );
      
     }
     /**
@@ -282,21 +271,21 @@ public class RedBlackBSTTest extends TestCase
 
         
             // Verifica que la informaci�n sea correcta
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.contains(4), true);
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.contains(8), true);
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.contains(54), true);
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.contains(3), true);
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.contains(2), true);
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.contains(97), true);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.contains(4), true);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.contains(8), true);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.contains(54), true);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.contains(3), true);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.contains(2), true);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.contains(97), true);
         	
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.contains(150), false);
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.contains(200), false);
-        	assertEquals(  "No se obtuvo el elemento indicado", hashTable.contains(300), false);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.contains(150), false);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.contains(200), false);
+        	assertEquals(  "No se obtuvo el elemento indicado", redBlackBST.contains(300), false);
         	
         	
         	
             // Verifica que el tamaño
-            assertEquals( "El tamaño no es el correcto", size, hashTable.size( ) );
+            assertEquals( "El tamaño no es el correcto", size, redBlackBST.size( ) );
          
 
    
@@ -310,37 +299,51 @@ public class RedBlackBSTTest extends TestCase
     	setupEscenario1( );
         
             // Verifica que el tamaño
-        assertEquals( "Debe estar vacia.", hashTable.isEmpty(), true );
+        assertEquals( "Debe estar vacia.", redBlackBST.isEmpty(), true );
          
             size = 11;
             for( int cont = 0; cont < size; cont++ )
             {
-                hashTable.put(cont, "Test " + cont);
+                redBlackBST.put(cont, "Test " + cont);
             }
-         assertEquals( "No debe estar vacia.", hashTable.isEmpty(), false );
+         assertEquals( "No debe estar vacia.", redBlackBST.isEmpty(), false );
               
    
     }
-
-    public int obtieneNumPrimo(int cap){
-		int numPosPrimo= (cap*2)+1;
-		
-		boolean esPrimo=true;
-		while(esPrimo==true){
-			
-			for(int i=2; i<numPosPrimo;i++){
-					if(numPosPrimo%i==0.0){
-						esPrimo=false;
-					}
-			}
-			if(esPrimo==true){
-				return numPosPrimo;
-			}
-			else{
-				numPosPrimo++;
-				esPrimo=true;
-			}
-		}
-		return numPosPrimo;
-	}
+    /**
+     * Prueba in min
+     * 
+    */
+    public void testMin( )
+    {
+    	setupEscenario3( );
+        
+    	
+        assertEquals( "Ese no es el minimo.", 1 , (int) redBlackBST.min() );
+         
+        redBlackBST.delete(1);
+        redBlackBST.delete(2);
+        redBlackBST.delete(3);
+                
+        assertEquals( "Ese no es el minimo.", 4 , (int) redBlackBST.min() );
+        
+    }
+    /**
+     * Prueba max
+     * 
+    */
+    public void testMax( )
+    {
+    	setupEscenario3( );
+        
+    	
+        assertEquals( "Ese no es el maximo.", 101 , (int) redBlackBST.max() );
+         
+        redBlackBST.deleteMax();
+        redBlackBST.delete(100);
+        redBlackBST.deleteMax();
+                
+        assertEquals( "Ese no es el maximo.", 98 , (int) redBlackBST.max() );
+        
+    }
 }

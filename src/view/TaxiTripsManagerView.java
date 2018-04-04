@@ -1,5 +1,6 @@
 package view;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.Scanner;
 
@@ -80,8 +81,27 @@ public class TaxiTripsManagerView
 				long memoryBeforeCase1 = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 				long startTime = System.nanoTime();
 
-				//Cargar data
-				Controller.cargarSistema(linkJson);
+				if(linkJson.equals(TaxiTripsManager.DIRECCION_LARGE_JSON))
+				{
+					System.out.println(linkJson);
+					File arch = new File(linkJson);
+					if ((arch.exists())) 
+					{
+						File[] files = arch.listFiles();
+						for (File file : files) 
+						{
+							if(file.isFile())
+							{
+								System.out.println("./data/taxi-trips-wrvz-psew-subset-large/"+file.getName());
+								Controller.cargarSistema("./data/taxi-trips-wrvz-psew-subset-large/"+file.getName());
+							}
+						}
+					}
+				}
+				else
+				{
+					Controller.cargarSistema(linkJson);
+				}
 
 				//Tiempo en cargar
 				long endTime = System.nanoTime();

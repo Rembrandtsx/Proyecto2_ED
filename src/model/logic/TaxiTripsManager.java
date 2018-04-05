@@ -25,6 +25,7 @@ import model.data_structures.ISymbolTable;
 import model.data_structures.ILinkedList;
 import model.data_structures.LinkedSimpleList;
 import model.data_structures.Queue;
+import model.data_structures.RedBlackBST;
 import model.data_structures.SimpleNodeSymbolTable;
 import model.data_structures.Stack;
 import model.data_structures.SymbolTableLP;
@@ -55,18 +56,58 @@ public class TaxiTripsManager implements ITaxiTripsManager
 
 	private Servicio[] servicios;
 	
-	private Merge<Servicio> ordenadorMerge;
+	
+	//Declaracion de estructuras de datos
+	
+	private RedBlackBST<String, LinkedSimpleList<Taxi>> arbolCompanhias;
+	
+	private SymbolTableSC<Integer, Servicio> hashTableServiciosArea;
+	
+	private SymbolTableSC<RangoFechaHora, Servicio> hashTableServiciosDuracion;
+	
+	private RedBlackBST<Integer, LinkedSimpleList<Servicio>> arbolServiciosXDistancia;
+	
+	private SymbolTableSC<String, Servicio> hashTableServiciosZonasXY;
+	
+	private RedBlackBST<Date, LinkedSimpleList<Servicio>> arbolServiciosOrdenCrono;
+	
+	private HeapSort<Servicio> heapSort;
+	
 	private int numElementos;
+	
+	
+	
 	@Override //1C
 	public boolean cargarSistema(String direccionJson) 
 	{
+		//Inicializa las estructuras
 		
+		if(arbolCompanhias==null){
+			arbolCompanhias= new RedBlackBST<>();
+		}
+		if(hashTableServiciosArea==null){
+			hashTableServiciosArea= new SymbolTableSC<>(101);
+		}
+		if(hashTableServiciosDuracion==null){
+			hashTableServiciosDuracion= new SymbolTableSC<>(101);
+		}
+		if(arbolServiciosXDistancia==null){
+			arbolServiciosXDistancia= new RedBlackBST<>();
+		}
+		if(hashTableServiciosZonasXY==null){
+			hashTableServiciosZonasXY= new SymbolTableSC<>(101);
+		}
+		if(arbolServiciosOrdenCrono==null){
+			arbolServiciosOrdenCrono= new RedBlackBST<>();
+		}
+		if(heapSort==null){
+			heapSort= new HeapSort<>();
+		}
 		servicios= new Servicio[101];
-		
-		ordenadorMerge= new Merge<>();
 		
 		//Variables temporales usadas al cargar
 		Servicio servicioActual=null;
+		Taxi taxiActual=null;
 		numElementos=0;
 		
 		
@@ -84,7 +125,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			{
 				JsonObject obj= (JsonObject) arr.get(i);
 				
-				String company = obj.get("company") == null? "NaN": obj.get("company").getAsString();
+				String company = obj.get("company") == null? "Independent Owner": obj.get("company").getAsString();
 				company = company.replaceAll("\\P{L}+", "");
 
 				/* Obtener la propiedad taxi_id de un taxi (String)*/
@@ -130,9 +171,25 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 				
 				servicioActual= new Servicio(trip_id, dropoff_census_tract, dropoff_centroid_latitude, dropoff_type, droplat, droplong, dropoff_centroid_longitude, dropoff_community_area, extras, fare, payment_type, pickup_census_tract, pickup_centroid_latitude, pickup_type, picklat, picklong, pickup_centroid_longitude, pickup_community_area, taxiAutor, tips, tolls, trip_end_timestamp, trip_miles, trip_seconds, trip_start_timestamp, trip_total, company);
+				taxiActual= new Taxi(taxi_id, company);
 				
 				
-					
+				
+				LinkedSimpleList<Taxi> listArbol=arbolCompanhias.get(company);
+				
+				if(listArbol==null){
+					listArbol= new LinkedSimpleList<>();
+					listArbol.add(taxiActual);
+					arbolCompanhias.put(company, listArbol);
+				}else{
+					Taxi temp= estaAgregadaCompan(listArbol, taxi_id);
+					if(temp==null){
+					listArbol.add(taxiActual);
+					}
+				}
+				
+				hashTableServiciosArea.put(pickup_community_area, servicioActual);
+				
 				sobrePasoCarga();
 				servicios[pos]=servicioActual;
 				numElementos++;
@@ -239,6 +296,19 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				}
 				return null;
 			}
+			//Proyecto 2
+			public Taxi estaAgregadaCompan(LinkedSimpleList<Taxi> p, String pId){
+				
+				Taxi actual;
+				for(int i=0; i<p.size(); i++){
+					actual= p.get(i);
+					if(actual.getTaxiId().equals(pId)){
+						return actual;
+					}
+					
+				}
+				return null;
+			}
 			
 
 			// METODOS DE REQUERIMIENTOS
@@ -281,7 +351,6 @@ public class TaxiTripsManager implements ITaxiTripsManager
 						
 					}
 				}
-				ordenadorMerge.sorted(rta);
 				//Retorna de la tabla Hash el conjunto de consulta.
 				return rta;
 			}

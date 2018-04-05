@@ -228,6 +228,28 @@ public class RedBlackBSTTest extends TestCase
         }
       ///Se agregan elementos aleatorios
     	
+
+        // Verifica que la informaci�n sea correcta, cuando la llave ya existe
+        
+        redBlackBST.put(30, "Test " + 54);
+        
+        redBlackBST.put(50, "Test " + 32);
+        
+        redBlackBST.put(70, "Test " + 10);
+        
+        redBlackBST.put(100, "Test " + 100);
+        
+        
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(30), "Test 54" );
+        
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(70), "Test 10" );
+        
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(100), "Test 100" );
+        
+        assertEquals( "La adici�n no se realiz� correctamente", redBlackBST.get(101), null );
+        
+        
+        size = size+4;
         
         
         

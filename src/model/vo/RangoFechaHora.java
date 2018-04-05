@@ -1,10 +1,15 @@
 package model.vo;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
+
 /**
  * Modela una rango de fechas y horas (iniciales y finales)
  *
  */
-public class RangoFechaHora
+public class RangoFechaHora implements Comparable<RangoFechaHora>
 {
 	//ATRIBUTOS
 	
@@ -106,6 +111,28 @@ public class RangoFechaHora
 	public void setHoraFinal(String horaFinal) 
 	{
 		this.horaFinal = horaFinal;
+	}
+
+	@Override
+	public int compareTo(RangoFechaHora o) {
+		// TODO Auto-generated method stub
+		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy:");
+        Date fechaDate = null;
+        Date fechaDate2= null;
+        try {
+            fechaDate = formato.parse(this.fechaInicial);
+            fechaDate2= formato.parse(o.fechaInicial);
+            return fechaDate.compareTo(fechaDate);
+        } 
+        catch (ParseException ex) 
+        {
+            
+        } catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return 0;
+		
 	}
 	
 }

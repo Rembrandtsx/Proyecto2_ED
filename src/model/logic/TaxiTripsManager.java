@@ -313,6 +313,57 @@ public class TaxiTripsManager implements ITaxiTripsManager
 
 			// METODOS DE REQUERIMIENTOS
 			
+			
+			
+			
+			
+			@Override
+			public ILinkedList<TaxiConServicios> A1TaxiConMasServiciosEnZonaParaCompania(int zonaInicio, String compania) {
+				// TODO Auto-generated method stub
+				return new LinkedSimpleList<TaxiConServicios>();
+			}
+
+
+			@Override
+			public ILinkedList<Servicio> A2ServiciosPorDuracion(int duracion) {
+				// TODO Auto-generated method stub
+				return new LinkedSimpleList<Servicio>();
+			}
+
+
+			@Override
+			public ILinkedList<Servicio> B1ServiciosPorDistancia(double distanciaMinima, double distanciaMaxima) {
+				// TODO Auto-generated method stub
+				return new LinkedSimpleList<Servicio>();
+			}
+
+
+			@Override
+			public ILinkedList<Servicio> B2ServiciosPorZonaRecogidaYLlegada(int zonaInicio, int zonaFinal, String fechaI, String fechaF, String horaI, String horaF) {
+				// TODO Auto-generated method stub
+				return new LinkedSimpleList<Servicio>();
+			}
+
+
+			@Override
+			public TaxiConPuntos[] R1C_OrdenarTaxisPorPuntos() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public ILinkedList<Servicio> R2C_LocalizacionesGeograficas(String taxiIDReq2C, double millasReq2C, double latitudReq2C, double longitudReq2C) {
+				// TODO Auto-generated method stub
+				return new LinkedSimpleList<Servicio>();
+			}
+
+			@Override
+			public ILinkedList<Servicio> R3C_ServiciosEn15Minutos(String fecha, String hora) {
+				// TODO Auto-generated method stub
+				return new LinkedSimpleList<Servicio>();
+			}
+
+			
 			// 1A PROYECTO 2
 			@Override
 			public LinkedSimpleList<Servicio> darServiciosEnAreaOrdenCronologico(int pArea) {

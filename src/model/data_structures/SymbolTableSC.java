@@ -205,6 +205,22 @@ public class SymbolTableSC<K extends Comparable<K>, V extends Comparable<V>> imp
 		}
 		return null;
 	}
+	public LinkedSimpleList<V> getList(K pKey) {
+		// TODO Auto-generated method stub
+		int pos= hash(pKey);
+		LinkedSimpleList<SimpleNodeSymbolTable<K, V>> temp=(LinkedSimpleList<SimpleNodeSymbolTable<K, V>>) nodes[pos];
+		
+		if(temp!=null&&temp.get(0).getKey().compareTo(pKey)==0){
+			LinkedSimpleList<V> rta= new LinkedSimpleList<>();
+			for(int i=0; i<temp.size();i++ ){
+				rta.add(temp.get(i).getElement());
+			}
+			return rta;
+					
+		}
+		
+		return null;
+	}
 	public int obtieneNumPrimo(int cap){
 		int numPosPrimo= (cap*2)+1;
 		

@@ -23,6 +23,7 @@ import model.data_structures.IQueue;
 import model.data_structures.IStack;
 import model.data_structures.ISymbolTable;
 import model.data_structures.ILinkedList;
+import model.data_structures.IList;
 import model.data_structures.LinkedSimpleList;
 import model.data_structures.Queue;
 import model.data_structures.RedBlackBST;
@@ -45,6 +46,8 @@ import model.vo.RangoFechaHora;
 import model.vo.Servicio;
 import model.vo.ServiciosValorPagado;
 import model.vo.Taxi;
+import model.vo.TaxiConPuntos;
+import model.vo.TaxiConServicios;
 import model.vo.ZonaServicios;
 import sun.text.normalizer.SymbolTable;
 
@@ -63,7 +66,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	private SymbolTableSC<Integer, Servicio> hashTableServiciosArea;
 	
-	private SymbolTableSC<RangoFechaHora, Servicio> hashTableServiciosDuracion;
+	private SymbolTableSC<Integer, Servicio> hashTableServiciosDuracion;
 	
 	private RedBlackBST<Integer, LinkedSimpleList<Servicio>> arbolServiciosXDistancia;
 	
@@ -189,7 +192,8 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				}
 				
 				hashTableServiciosArea.put(pickup_community_area, servicioActual);
-				
+				//Se agrupan los servicios por duracion de 60 sg
+				hashTableServiciosDuracion.put((trip_seconds%60==0)?((int)trip_seconds/60):((int)trip_seconds/60)+1, servicioActual);
 				sobrePasoCarga();
 				servicios[pos]=servicioActual;
 				numElementos++;
@@ -224,8 +228,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				System.out.println("ID SERVICE " +i  +"  : "+ servicios[i].getTripId());
 			
 		}
-			
-
+		
 			
 			
 			
@@ -313,33 +316,60 @@ public class TaxiTripsManager implements ITaxiTripsManager
 
 			// METODOS DE REQUERIMIENTOS
 			
-			
-			
-			
-			
 			@Override
-			public ILinkedList<TaxiConServicios> A1TaxiConMasServiciosEnZonaParaCompania(int zonaInicio, String compania) {
+			public IList<TaxiConServicios> A1TaxiConMasServiciosEnZonaParaCompania(int zonaInicio, String compania) {
 				// TODO Auto-generated method stub
-				return new LinkedSimpleList<TaxiConServicios>();
+				LinkedSimpleList<SimpleNodeSymbolTable<Integer, Servicio>> serviciosArea= hashTableServiciosArea.getNode(zonaInicio);
+				String companhia= compania.replace(" ", "");
+				LinkedSimpleList<Taxi> taxisCompa= arbolCompanhias.get(companhia);
+				
+				int numSerMayor=0;
+				LinkedSimpleList<TaxiConServicios> mayores= new LinkedSimpleList<TaxiConServicios>();
+				
+				TaxiConServicios actual= null;
+				int numSerActual= 0;
+				
+				if(taxisCompa!=null){
+				for(int i=0; i<taxisCompa.size();i++){
+					actual= new TaxiConServicios(taxisCompa.get(i).getTaxiId(), taxisCompa.get(i).getCompany());
+					
+					for(int j=0; j<serviciosArea.size();j++){
+						if(serviciosArea.get(j).getElement().getTaxiId().equals(actual.getTaxiId())){
+							actual.agregarServicio(serviciosArea.get(j).getElement());
+							numSerActual++;
+						}
+					}
+					if(numSerActual>numSerMayor){
+						mayores= new LinkedSimpleList<>();
+						mayores.add(actual);
+					}
+					else if(numSerActual==numSerMayor){
+						mayores.add(actual);
+					}
+				}
+				}
+				return mayores;
+			
 			}
 
 
 			@Override
-			public ILinkedList<Servicio> A2ServiciosPorDuracion(int duracion) {
+			public IList<Servicio> A2ServiciosPorDuracion(int duracion) {
+				// TODO Auto-generated method stub
+				return hashTableServiciosDuracion.getList((duracion%60==0)?((int)duracion/60):((int)duracion/60)+1);
+				
+			}
+
+
+			@Override
+			public IList<Servicio> B1ServiciosPorDistancia(double distanciaMinima, double distanciaMaxima) {
 				// TODO Auto-generated method stub
 				return new LinkedSimpleList<Servicio>();
 			}
 
 
 			@Override
-			public ILinkedList<Servicio> B1ServiciosPorDistancia(double distanciaMinima, double distanciaMaxima) {
-				// TODO Auto-generated method stub
-				return new LinkedSimpleList<Servicio>();
-			}
-
-
-			@Override
-			public ILinkedList<Servicio> B2ServiciosPorZonaRecogidaYLlegada(int zonaInicio, int zonaFinal, String fechaI, String fechaF, String horaI, String horaF) {
+			public IList<Servicio> B2ServiciosPorZonaRecogidaYLlegada(int zonaInicio, int zonaFinal, String fechaI, String fechaF, String horaI, String horaF) {
 				// TODO Auto-generated method stub
 				return new LinkedSimpleList<Servicio>();
 			}
@@ -352,20 +382,20 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			}
 
 			@Override
-			public ILinkedList<Servicio> R2C_LocalizacionesGeograficas(String taxiIDReq2C, double millasReq2C, double latitudReq2C, double longitudReq2C) {
+			public IList<Servicio> R2C_LocalizacionesGeograficas(String taxiIDReq2C, double millasReq2C, double latitudReq2C, double longitudReq2C) {
 				// TODO Auto-generated method stub
 				return new LinkedSimpleList<Servicio>();
 			}
 
 			@Override
-			public ILinkedList<Servicio> R3C_ServiciosEn15Minutos(String fecha, String hora) {
+			public IList<Servicio> R3C_ServiciosEn15Minutos(String fecha, String hora) {
 				// TODO Auto-generated method stub
 				return new LinkedSimpleList<Servicio>();
 			}
 
 			
 			// 1A PROYECTO 2
-			@Override
+			
 			public LinkedSimpleList<Servicio> darServiciosEnAreaOrdenCronologico(int pArea) {
 				// TODO Auto-generated method stub
 				//Crea la tabla Hash y se adicionan elementos
@@ -407,7 +437,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			}
 
 			// 1B
-			@Override
+			
 			public LinkedSimpleList<Servicio> darServiciosPorDistanciaRecorridaMillas(String dis){
 				
 				

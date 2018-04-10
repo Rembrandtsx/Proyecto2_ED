@@ -1,49 +1,61 @@
 package controller;
 
 import api.ITaxiTripsManager;
-import model.data_structures.HeapBinario;
-import model.data_structures.IQueue;
-import model.data_structures.IStack;
-import model.data_structures.ISymbolTable;
-import model.data_structures.ILinkedList;
-import model.data_structures.LinkedSimpleList;
+import model.data_structures.IList;
 import model.logic.TaxiTripsManager;
-import model.vo.Compania;
-import model.vo.CompaniaServicios;
-import model.vo.CompaniaTaxi;
-import model.vo.InfoTaxiRango;
-import model.vo.RangoDistancia;
-import model.vo.RangoFechaHora;
 import model.vo.Servicio;
-import model.vo.ServiciosValorPagado;
 import model.vo.Taxi;
-import model.vo.ZonaServicios;
+import model.vo.TaxiConPuntos;
+import model.vo.TaxiConServicios;
 
 public class Controller 
 {
 	/**
 	 * modela el manejador de la clase l�gica
 	 */
-	private static ITaxiTripsManager manager = new TaxiTripsManager();
+	private static ITaxiTripsManager manager =new TaxiTripsManager();
 
-	
-	//1C
+	//Carga El sistema
 	public static boolean cargarSistema(String direccionJson)
 	{
 		return manager.cargarSistema(direccionJson);
 	}
-	
 	//1A
-	
-	public static LinkedSimpleList<Servicio> darServiciosEnAreaOrdenCronologico(int pArea) {
-			
-		return manager.darServiciosEnAreaOrdenCronologico(pArea);
+	public static IList<TaxiConServicios> R1A(int zonaInicio, String compania)
+	{
+		return manager.A1TaxiConMasServiciosEnZonaParaCompania(zonaInicio, compania);
 	}
 
 	//2A
-	
-	public static LinkedSimpleList<Servicio>  darServiciosPorDistanciaRecorridaMillas(String r) {
-		
-		return manager.darServiciosPorDistanciaRecorridaMillas(r);
+	public static IList<Servicio> R2A(int duracion)
+	{
+		return manager.A2ServiciosPorDuracion(duracion);
 	}
+
+	//1B
+	public static IList<Servicio> R1B(double distanciaMinima, double distanciaMaxima)
+	{
+		return manager.B1ServiciosPorDistancia(distanciaMinima, distanciaMaxima);
+	}
+
+	//2B
+	public static IList<Servicio> R2B(int zonaInicio, int zonaFinal, String fechaI, String fechaF, String horaI, String horaF)
+	{
+		return manager.B2ServiciosPorZonaRecogidaYLlegada(zonaInicio, zonaFinal, fechaI, fechaF, horaI, horaF);
+	}	
+	//1C
+	public static TaxiConPuntos[] R1C()
+	{
+		return manager.R1C_OrdenarTaxisPorPuntos();
+	}	
+	//2C
+	public static IList<Servicio> R2C(String taxiIDReq2C, double millas, double latitud, double longitud)
+	{
+		return manager.R2C_LocalizacionesGeograficas(taxiIDReq2C, millas, latitud, longitud);
+	}
+	//3C
+	public static IList<Servicio> R3C(String fecha, String hora) 
+	{
+		return manager.R3C_ServiciosEn15Minutos(fecha, hora);
+	}	
 }

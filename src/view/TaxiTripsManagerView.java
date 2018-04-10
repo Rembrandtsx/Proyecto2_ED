@@ -10,6 +10,7 @@ import model.data_structures.IQueue;
 import model.data_structures.IStack;
 import model.data_structures.ISymbolTable;
 import model.data_structures.ILinkedList;
+import model.data_structures.IList;
 import model.data_structures.LinkedSimpleList;
 import model.logic.TaxiTripsManager;
 import model.vo.Compania;
@@ -22,6 +23,8 @@ import model.vo.Servicio;
 import model.vo.ServicioResumen;
 import model.vo.ServiciosValorPagado;
 import model.vo.Taxi;
+import model.vo.TaxiConPuntos;
+import model.vo.TaxiConServicios;
 import model.vo.ZonaServicios;
 
 /**
@@ -135,11 +138,14 @@ case 2: //1A
 				
 				//Req 1A
 				// Mostrar el Id del (de los) taxi(s) y fecha/hora de inicio de sus servicios iniciando en la zona dada
-				IList<TaxiConServicios> listaTaxis = Controller.R1A(idZona, companiaReq1A);
-				for(TaxiConServicios taxi: listaTaxis){
-					taxi.print();
+				LinkedSimpleList<TaxiConServicios> listaTaxis = (LinkedSimpleList<TaxiConServicios>) Controller.R1A(idZona, companiaReq1A);
+				TaxiConServicios actual1A= null;
+				for(int i=0; i<listaTaxis.size();i++){
+					actual1A= listaTaxis.get(i);
+					actual1A.print();
+					
 				}
-
+				
 				break;
 
 			case 3: //2A
@@ -156,12 +162,16 @@ case 2: //1A
 				}
 
 				// Req 2A
-				IList<Servicio> listaServicios = Controller.R2A(duracion);
-				for(Servicio s : listaServicios){
-					System.out.println("IdTaxi: " + s.getTaxiId()
-							         + "  IdServicio: "+ s.getTripId()
-							         + "  Duracion: "+ s.getTripSeconds());
+				LinkedSimpleList<Servicio> listaServicios = (LinkedSimpleList<Servicio>) Controller.R2A(duracion);
+				Servicio actual2A= null;
+				for(int i=0; i<listaServicios.size();i++){
+					actual2A= listaServicios.get(i);
+					System.out.println("IdTaxi: " + actual2A.getTaxiId()
+			         + "  IdServicio: "+ actual2A.getTripId()
+			         + "  Duracion: "+ actual2A.getTripSeconds());
+					
 				}
+				
 			
 				break;
 
@@ -254,7 +264,12 @@ case 2: //1A
 					System.out.println("Id Trip: "+ s.getTripId());
 					System.out.println("  Zona recogida: " + s.getPickupZone());
 					System.out.println("  Zona terminacion: " + s.getDropOffZone());
-					System.out.println("  Hora inicial: " + s.getStartTime());
+					try {
+						System.out.println("  Hora inicial: " + s.getStartTime());
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 
 				break;
@@ -348,7 +363,12 @@ case 2: //1A
 					System.out.println("  Taxi: " + s.getTaxiId());
 					System.out.println("  Zona recogida: " + s.getPickupZone());
 					System.out.println("  Zona terminacion: " + s.getDropOffZone());
-					System.out.println("  Fecha/Hora inicial: " + s.getStartTime());
+					try {
+						System.out.println("  Fecha/Hora inicial: " + s.getStartTime());
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 
 				break;

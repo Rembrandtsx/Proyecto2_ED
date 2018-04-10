@@ -246,4 +246,30 @@ public class Servicio implements Comparable<Servicio>{
 		// TODO Auto-generated method stub
 		return this.companhiaTaxi;
 	}
+	
+	
+	
+
+    public int getPickupZone(){
+        //TODO Auto-generated method stub
+        return -1;
+    }
+
+    public int getDropOffZone(){
+        //TODO Auto-generated method stub
+        return -1;
+    }
+
+
+    public double getPickupLatitud(){
+        //TODO Auto-generated method stub
+        return -1;
+    }
+
+    public double getPickupLongitud(){
+        //TODO Auto-generated method stub
+        return -1;
+    }
+
+    
 }

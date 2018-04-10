@@ -2,7 +2,7 @@ package model.data_structures;
 
 import java.util.Iterator;
 
-public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>,Comparable<LinkedSimpleList<T>>, Iterator<T>{
+public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>, IList<T>, Comparable<LinkedSimpleList<T>>,  Iterator<T>{
 
 	private SimpleNode<T> first;
 	private SimpleNode<T> actual;

@@ -281,8 +281,33 @@ case 2: //1A
 				// TODO Si el conjunto ordenado tiene menos de 10 taxis, hay que mostrar todos taxis en orden ascendente de puntos. 
 				//      Por cada taxi mostrar su Id y sus puntos
 				//
+				
 				//      Si el conjunto ordenado tiene 10 taxis o mas, hay que mostrar los 5 primeros taxis y los 5 ultimos taxis resultado del ordenamiento. 
 				//      Por cada taxi mostrar su Id y sus puntos
+				TaxiConPuntos actual1C= null;
+				if(taxis.length<10){
+					
+					for(int i=0; i<taxis.length;i++){
+						actual1C= taxis[i];
+						System.out.println("IdTaxi: " + actual1C.getTaxiId()
+				         + "  PuntosTaxi: "+ actual1C.getPuntos());
+				    }
+				}else{
+					for(int i=0; i<5;i++){
+						actual1C= taxis[i];
+						if(actual1C!=null){
+						System.out.println("IdTaxi: " + actual1C.getTaxiId()
+				         + "  PuntosTaxi: "+ actual1C.getPuntos());
+						}
+				    }
+					for(int i=taxis.length-1; i>taxis.length-6;i--){
+						actual1C= taxis[i];
+						if(actual1C!=null){
+							System.out.println("IdTaxi: " + actual1C.getTaxiId()
+					         + "  PuntosTaxi: "+ actual1C.getPuntos());
+						}
+				    }
+				}
 				break;
 
 			case 7: //2C

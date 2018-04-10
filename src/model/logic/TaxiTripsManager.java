@@ -33,6 +33,7 @@ import model.data_structures.SymbolTableLP;
 import model.data_structures.SymbolTableSC;
 import model.logic.utils.ComparatorCompanhiaNumServicios;
 import model.logic.utils.ComparatorTaxiPorIdAlfabeticamente;
+import model.logic.utils.ComparatorTaxiPorPuntos;
 import model.logic.utils.HeapSort;
 import model.logic.utils.Merge;
 import model.vo.Compania;
@@ -61,6 +62,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	
 	//Declaracion de estructuras de datos
+	private TaxiConPuntos[] taxis;
 	
 	private RedBlackBST<String, LinkedSimpleList<Taxi>> arbolCompanhias;
 	
@@ -105,6 +107,9 @@ public class TaxiTripsManager implements ITaxiTripsManager
 		}
 		if(heapSort==null){
 			heapSort= new HeapSort<>();
+		}
+		if(taxis==null){
+			taxis= new TaxiConPuntos[101];
 		}
 		servicios= new Servicio[101];
 		
@@ -190,12 +195,29 @@ public class TaxiTripsManager implements ITaxiTripsManager
 					listArbol.add(taxiActual);
 					}
 				}
-				
+				//Estructuras parte A
 				hashTableServiciosArea.put(pickup_community_area, servicioActual);
 				//Se agrupan los servicios por duracion de 60 sg
 				hashTableServiciosDuracion.put((trip_seconds%60==0)?((int)trip_seconds/60):((int)trip_seconds/60)+1, servicioActual);
+				
 				sobrePasoCarga();
 				servicios[pos]=servicioActual;
+				
+				sobrePasoCargaTaxis();
+				
+				if(estaAgregadoTaxiConPuntos(taxis, taxi_id)==null){
+					taxis[pos]= new TaxiConPuntos(taxi_id, company);
+					taxis[pos].setMillas(trip_miles);
+					taxis[pos].setDinero(trip_total);
+					taxis[pos].aumentarNumServicios();
+				}
+				else{
+					TaxiConPuntos temp= (TaxiConPuntos) estaAgregadoTaxiConPuntos(taxis, taxi_id);
+					temp.setDinero(trip_total);
+					temp.setMillas(trip_miles);
+					temp.aumentarNumServicios();
+				}
+				
 				numElementos++;
 				pos++;
 				
@@ -256,12 +278,28 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 				
 			}
+			public void sobrePasoCargaTaxis() {
+				// TODO Auto-generated method stub
+				double porcentaje= (numElementos*100)/taxis.length;
+				if(porcentaje>80){
+					int sizeTemp= taxis.length;
+					TaxiConPuntos[] temp2= taxis;
+					int size= sizeTemp+1000;
+					
+					taxis=  new TaxiConPuntos[size];
+					for(int i=1; i<sizeTemp;i++){
+						taxis[i]= temp2[i];
+					}
+					
+				}
+				
+				
+			}
 			
-			
-			public Taxi estaAgregadoTaxi(Taxi[] a, String id){
-				Taxi actual;
+			public TaxiConPuntos estaAgregadoTaxiConPuntos(TaxiConPuntos[] a, String id){
+				TaxiConPuntos actual;
 				for(int i=1; i<a.length;i++){
-					actual= (Taxi) a[i];
+					actual=  a[i];
 					
 					if(actual!=null&&actual.getTaxiId().equals(id)){
 						return actual;
@@ -378,7 +416,8 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			@Override
 			public TaxiConPuntos[] R1C_OrdenarTaxisPorPuntos() {
 				// TODO Auto-generated method stub
-				return null;
+				heapSort.heapSortAscendentemente(taxis, new ComparatorTaxiPorPuntos());
+				return taxis;
 			}
 
 			@Override

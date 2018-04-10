@@ -3,12 +3,11 @@ package model.logic.utils;
 import java.util.Comparator;
 
 import model.data_structures.HeapBinario;
-import model.data_structures.LinkedSimpleList;
-import model.data_structures.SimpleNode;
-import model.vo.Servicio;
-import model.vo.Taxi;
 
-public class  HeapSort<T extends Comparable<T>>{
+import model.vo.Taxi;
+import model.vo.TaxiConPuntos;
+
+public class  HeapSort<V extends Comparable<V>>{
 
 	
 	    
@@ -34,7 +33,50 @@ public class  HeapSort<T extends Comparable<T>>{
 	    	
 	    	
 	    }
+	    public static void heapSortAscendentemente(TaxiConPuntos[] a, Comparator<TaxiConPuntos> comparador){
+	    	
+	    	HeapBinario<TaxiConPuntos> heapB= new HeapBinario(comparador);
+	    	
+	    	for(int j=1; j<a.length;j++){
+	    		
+	    		heapB.swim(a[j]);
+	    		
+	    	}
+	    	
+	    	TaxiConPuntos actual2= heapB.sink();
+	    	
+	    	for(int i=heapB.size(); i>0;i--){
+	    		
+	    		a[i]=actual2;
+	    		actual2= heapB.sink();
+	    		
+	    		
+	    	}
+	    	
+	    	
+	    }
 	    
-	    
+	    public void heapSortAscende(V[] a, Comparator<V> comparador){
+	    	
+	    	HeapBinario<V> heapB= new HeapBinario(comparador);
+	    	
+	    	for(int j=1; j<a.length;j++){
+	    		
+	    		heapB.swim(a[j]);
+	    		
+	    	}
+	    	
+	    	V actual2= heapB.sink();
+	    	
+	    	for(int i=heapB.size(); i>0;i--){
+	    		
+	    		a[i]=actual2;
+	    		actual2= heapB.sink();
+	    		
+	    		
+	    	}
+	    	
+	    	
+	    }
 	
 }

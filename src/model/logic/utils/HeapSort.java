@@ -2,6 +2,7 @@ package model.logic.utils;
 
 import java.util.Comparator;
 
+import model.data_structures.ArrayList;
 import model.data_structures.HeapBinario;
 
 import model.vo.Taxi;
@@ -11,21 +12,21 @@ public class  HeapSort<V extends Comparable<V>>{
 
 	
 	    
-	    public static void heapSortAscendentemente(Taxi[] a, Comparator<Taxi> comparador){
+	    public static void heapSortAscendentemente(ArrayList<TaxiConPuntos> a, ComparatorTaxiPorPuntos comparador){
 	    	
-	    	HeapBinario<Taxi> heapB= new HeapBinario(comparador);
+	    	HeapBinario<TaxiConPuntos> heapB= new HeapBinario(comparador);
 	    	
-	    	for(int j=1; j<a.length;j++){
+	    	for(int j=1; j<a.size();j++){
 	    		
-	    		heapB.swim(a[j]);
+	    		heapB.swim(a.get(j));
 	    		
 	    	}
 	    	
-	    	Taxi actual2= heapB.sink();
+	    	TaxiConPuntos actual2= heapB.sink();
 	    	
-	    	for(int i=heapB.size(); i>0;i--){
+	    	for(int i=(0); i>=0;i--){
 	    		
-	    		a[i]=actual2;
+	    		a.addIn(i, actual2);
 	    		actual2= heapB.sink();
 	    		
 	    		

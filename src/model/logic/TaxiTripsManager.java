@@ -18,6 +18,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import api.ITaxiTripsManager;
+import model.data_structures.ArrayList;
 import model.data_structures.HeapBinario;
 import model.data_structures.IQueue;
 import model.data_structures.IStack;
@@ -62,7 +63,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	
 	//Declaracion de estructuras de datos
-	private TaxiConPuntos[] taxis;
+	private ArrayList<TaxiConPuntos> taxis;
 	
 	private RedBlackBST<String, LinkedSimpleList<Taxi>> arbolCompanhias;
 	
@@ -109,7 +110,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			heapSort= new HeapSort<>();
 		}
 		if(taxis==null){
-			taxis= new TaxiConPuntos[101];
+			taxis= new ArrayList<>();
 		}
 		servicios= new Servicio[101];
 		
@@ -203,13 +204,14 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				sobrePasoCarga();
 				servicios[pos]=servicioActual;
 				
-				sobrePasoCargaTaxis();
+				
 				
 				if(estaAgregadoTaxiConPuntos(taxis, taxi_id)==null){
-					taxis[pos]= new TaxiConPuntos(taxi_id, company);
-					taxis[pos].setMillas(trip_miles);
-					taxis[pos].setDinero(trip_total);
-					taxis[pos].aumentarNumServicios();
+					TaxiConPuntos t= new TaxiConPuntos(taxi_id, company);
+					t.setMillas(trip_miles);
+					t.setDinero(trip_total);
+					t.aumentarNumServicios();
+					taxis.add(t);
 				}
 				else{
 					TaxiConPuntos temp= (TaxiConPuntos) estaAgregadoTaxiConPuntos(taxis, taxi_id);
@@ -278,28 +280,15 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 				
 			}
-			public void sobrePasoCargaTaxis() {
-				// TODO Auto-generated method stub
-				double porcentaje= (numElementos*100)/taxis.length;
-				if(porcentaje>80){
-					int sizeTemp= taxis.length;
-					TaxiConPuntos[] temp2= taxis;
-					int size= sizeTemp+1000;
-					
-					taxis=  new TaxiConPuntos[size];
-					for(int i=1; i<sizeTemp;i++){
-						taxis[i]= temp2[i];
-					}
-					
-				}
-				
-				
-			}
 			
-			public TaxiConPuntos estaAgregadoTaxiConPuntos(TaxiConPuntos[] a, String id){
+				
+				
+			
+			
+			public TaxiConPuntos estaAgregadoTaxiConPuntos(ArrayList<TaxiConPuntos> a, String id){
 				TaxiConPuntos actual;
-				for(int i=1; i<a.length;i++){
-					actual=  a[i];
+				for(int i=1; i<a.size();i++){
+					actual=  a.get(i);
 					
 					if(actual!=null&&actual.getTaxiId().equals(id)){
 						return actual;
@@ -416,8 +405,13 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			@Override
 			public TaxiConPuntos[] R1C_OrdenarTaxisPorPuntos() {
 				// TODO Auto-generated method stub
-				heapSort.heapSortAscendentemente(taxis, new ComparatorTaxiPorPuntos());
-				return taxis;
+				ComparatorTaxiPorPuntos comparador= new ComparatorTaxiPorPuntos();
+				heapSort.heapSortAscendentemente(taxis, comparador);
+				TaxiConPuntos[] respuesta=  new TaxiConPuntos[taxis.size()];
+				for(int i=0; i<taxis.size(); i++){
+					respuesta[i]= taxis.get(i);
+				}
+				return respuesta;
 			}
 
 			@Override

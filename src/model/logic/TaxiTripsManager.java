@@ -33,6 +33,7 @@ import model.data_structures.Stack;
 import model.data_structures.SymbolTableLP;
 import model.data_structures.SymbolTableSC;
 import model.logic.utils.ComparatorCompanhiaNumServicios;
+import model.logic.utils.ComparatorServicioPorFechaHora;
 import model.logic.utils.ComparatorTaxiPorIdAlfabeticamente;
 import model.logic.utils.ComparatorTaxiPorPuntos;
 import model.logic.utils.HeapSort;
@@ -83,6 +84,8 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	
 	
+	private LinkedSimpleList<Servicio> serviciosTotal;
+	
 	@Override //1C
 	public boolean cargarSistema(String direccionJson) 
 	{
@@ -112,6 +115,9 @@ public class TaxiTripsManager implements ITaxiTripsManager
 		if(taxis==null){
 			taxis= new ArrayList<>();
 		}
+		if(serviciosTotal==null){
+			serviciosTotal= new LinkedSimpleList<>();
+		}
 		servicios= new Servicio[101];
 		
 		//Variables temporales usadas al cargar
@@ -123,8 +129,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 		
 		
 		JsonParser parser = new JsonParser();
-		int pos=1;
-		int suma = 0;
+		int pos=0;
 		try {
 			
 			/* Cargar todos los JsonObject (servicio) definidos en un JsonArray en el archivo */
@@ -204,7 +209,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				sobrePasoCarga();
 				servicios[pos]=servicioActual;
 				
-				
+				serviciosTotal.add(servicioActual);
 				
 				if(estaAgregadoTaxiConPuntos(taxis, taxi_id)==null){
 					TaxiConPuntos t= new TaxiConPuntos(taxi_id, company);
@@ -406,11 +411,13 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			public TaxiConPuntos[] R1C_OrdenarTaxisPorPuntos() {
 				// TODO Auto-generated method stub
 				ComparatorTaxiPorPuntos comparador= new ComparatorTaxiPorPuntos();
-				heapSort.heapSortAscendentemente(taxis, comparador);
 				TaxiConPuntos[] respuesta=  new TaxiConPuntos[taxis.size()];
+				
 				for(int i=0; i<taxis.size(); i++){
 					respuesta[i]= taxis.get(i);
 				}
+				heapSort.heapSortAscendentemente(respuesta, comparador);
+				
 				return respuesta;
 			}
 
@@ -423,10 +430,88 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			@Override
 			public IList<Servicio> R3C_ServiciosEn15Minutos(String fecha, String hora) {
 				// TODO Auto-generated method stub
-				return new LinkedSimpleList<Servicio>();
+				Servicio actual=null;
+				Servicio menorFecha=servicios[1];
+				Servicio[] lista= new Servicio[numElementos];
+				Comparator<Servicio> comparador= new ComparatorServicioPorFechaHora();
+				for(int i=0; i<numElementos;i++){
+					lista[i]= servicios[i];
+					
+				}
+				heapSort.heapSortAscendentemente(lista, comparador);
+				
+				RedBlackBST<Integer,LinkedSimpleList<Servicio>> arbolConServiciosRango= new RedBlackBST<>();
+				
+				Integer keyActual=null;
+				
+				LinkedSimpleList<Servicio> listaActual=null;
+				
+				for(int i=0; i<numElementos;i++){
+					actual= servicios[i];
+					if(actual!=null){
+					
+						keyActual= obtenerKeyPorRango15M(menorFecha.trip_start_timestamp, actual.trip_start_timestamp);
+						listaActual= arbolConServiciosRango.get(keyActual);
+					
+					if(listaActual==null){
+						listaActual= new LinkedSimpleList<>();
+						listaActual.add(actual);
+						arbolConServiciosRango.put(keyActual, listaActual);
+					}else{
+						listaActual.add(actual);
+						arbolConServiciosRango.put(keyActual, listaActual);
+					}
+					}
+				}
+				Integer keyValorActual=obtenerKeyPorRango15M(menorFecha.trip_start_timestamp, fecha+"T"+hora);
+				
+				return arbolConServiciosRango.get(keyValorActual);
 			}
 
-			
+			public int obtenerKeyPorRango15M(String fechaPrimerServicio, String fechaActual ){
+				
+				SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
+		        try {
+		        	String[] fechaPS= fechaPrimerServicio.split("T");
+		        	String[]  horaPS=fechaPS[1].split(":");
+		        	fechaPrimerServicio= fechaPS[0]+ "T" + horaPS[0]+ ":00:00";
+		        	
+		        	
+		        	Date fechaDatePrimerS = formato.parse(fechaPrimerServicio);
+		        	Date fechaDate= formato.parse(fechaActual);
+		            
+		            Date inicioRango=fechaDatePrimerS;
+		            Date finRango=fechaDatePrimerS;
+		            Calendar calendar = Calendar.getInstance();
+	                Integer rtaNumRango=0;
+		            while(true){
+		            	
+		            	calendar.setTime(inicioRango); 
+		                calendar.add(Calendar.MINUTE,15);
+		                finRango= calendar.getTime();
+		                
+		                
+		                if(inicioRango.compareTo(fechaDate)>=0&&finRango.compareTo(fechaDate)<0){
+		                	return rtaNumRango;
+		                }
+		                
+		                System.out.println(inicioRango);
+		                rtaNumRango++;
+		                inicioRango=finRango;
+		                
+		            }
+		            
+		        } 
+		        catch (ParseException ex) 
+		        {
+		          ex.printStackTrace();
+				}
+				
+				
+				return 0;
+				
+				
+			}
 			// 1A PROYECTO 2
 			
 			public LinkedSimpleList<Servicio> darServiciosEnAreaOrdenCronologico(int pArea) {

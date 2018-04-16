@@ -4,6 +4,8 @@ import java.text.ParseException;
 
 import model.data_structures.LinkedSimpleList;
 import model.data_structures.Queue;
+import model.data_structures.SymbolTableSC;
+
 
 /**
  * Representation of a taxi object
@@ -21,7 +23,7 @@ public class Taxi implements Comparable<Taxi>
 	private String company;
 
 	/**Servicios prestados por el taxi*/
-	private LinkedSimpleList<Servicio> misServicios;
+	private SymbolTableSC<Integer, Servicio> misServicios;
 
 	/**La suma del dinero recibido por los servicios prestados */
 	private double ganancia;
@@ -34,7 +36,7 @@ public class Taxi implements Comparable<Taxi>
 	{
 		id = pID;
 		company = pCompany;
-		misServicios = new LinkedSimpleList<Servicio>();
+		misServicios = new SymbolTableSC<>(59); //Numero primo
 		ganancia = 0;
 		recorrido = 0;
 	}
@@ -60,18 +62,20 @@ public class Taxi implements Comparable<Taxi>
 	public void getGanancias(){
 		ganancia=0;
 		recorrido = 0;
-		misServicios.listing();
-		while(true)
+		
+		for(int i=0; i<misServicios.size();i++)
 		{
-			ganancia += misServicios.getCurrent().getTripTotal();
-			recorrido += misServicios.getCurrent().getTripMiles();
-			misServicios.avanzar();
-			try {
-				misServicios.getCurrent();
-			} catch (Exception e) {
-				break;
-				// TODO: handle exception
+			LinkedSimpleList<Servicio> servicios= misServicios.getList(i);
+			
+			Servicio actual= servicios.get(0);
+			
+			while(actual!=null){
+			ganancia += actual.getTripTotal();
+			recorrido += actual.getTripMiles();
+			
+			actual= servicios.get(i+1);
 			}
+			
 		}
 	}
 
@@ -188,8 +192,32 @@ public class Taxi implements Comparable<Taxi>
 		return ganancia/recorrido;
 	}
 
-	public LinkedSimpleList<Servicio> getMisServicios() {
+	public SymbolTableSC getMisServiciosHashTable() {
 		return misServicios;
+	}
+	public LinkedSimpleList<Servicio> getMisServicios() {
+		
+		SymbolTableSC<Integer, Servicio> lista= getMisServiciosHashTable();
+		LinkedSimpleList<Integer> listaKeys= (LinkedSimpleList<Integer>) getMisServiciosHashTable().Keys();
+		LinkedSimpleList<Servicio> respuesta= new LinkedSimpleList<>();
+		LinkedSimpleList<Servicio> listaActual= null;
+		Servicio actual=null;
+		
+		
+		for(int i=0; i<listaKeys.size(); i++){
+			listaActual= lista.getList(listaKeys.get(i));
+			
+			actual= listaActual.get(0);
+			int pos=0;
+			while(actual!=null){
+				
+				actual= listaActual.get(pos);
+				respuesta.add(actual);
+				pos++;
+			}
+		}
+		
+		return respuesta;
 	}
 	
 	//Comparar por ganancias
@@ -200,10 +228,8 @@ public class Taxi implements Comparable<Taxi>
 	
 	//METODOS AGREGADOS PARA REQUERIMIENTOS
 	
-	public void setServicios(LinkedSimpleList<Servicio> servicios) {
-		this.misServicios = servicios;
-	}
-	public void setServicio(Servicio servicio) {
-		this.misServicios.add(servicio);
+	
+	public void addServicio(Integer area, Servicio servicio) {
+		this.misServicios.put(area, servicio);
 	}
 }

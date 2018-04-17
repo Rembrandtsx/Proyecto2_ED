@@ -369,7 +369,7 @@ case 2: //1A
 
 			case 8: //3C
 				
-			
+				
 				//fecha 
 				System.out.println("Ingrese la fecha (Ej : 2017-02-01)");
 				String fecha = sc.next();
@@ -379,10 +379,11 @@ case 2: //1A
 				String hora = sc.next();
 
 				// Req 3C
-				IList<Servicio> servicios3C = Controller.R3C(fecha, hora);
-     			
-				for(Servicio s : servicios3C)
+				LinkedSimpleList<Servicio> servicios3C = (LinkedSimpleList<Servicio>) Controller.R3C(fecha, hora);
+     			Servicio s=null;
+				for(int i=0; i< servicios3C.size();i++)
 				{
+					s= servicios3C.get(i);
 					System.out.println();
 					System.out.println("Servicio: " + s.getTripId());
 					System.out.println("  Taxi: " + s.getTaxiId());

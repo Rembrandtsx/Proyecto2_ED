@@ -465,27 +465,20 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			@Override
 			public IList<Servicio> R3C_ServiciosEn15Minutos(String fecha, String hora) {
 				// TODO Auto-generated method stub
-				Servicio actual=null;
-				Servicio menorFecha=servicios[1];
-				Servicio[] lista= new Servicio[numElementos];
-				Comparator<Servicio> comparador= new ComparatorServicioPorFechaHora();
-				for(int i=0; i<numElementos;i++){
-					lista[i]= servicios[i];
-					
-				}
-				heapSort.heapSortAscendentemente(lista, comparador);
+			
+				RedBlackBST<Date,LinkedSimpleList<Servicio>> arbolConServiciosRango= new RedBlackBST<>();
 				
-				RedBlackBST<Integer,LinkedSimpleList<Servicio>> arbolConServiciosRango= new RedBlackBST<>();
-				
-				Integer keyActual=null;
+				Date keyActual=null;
 				
 				LinkedSimpleList<Servicio> listaActual=null;
+				
+				Servicio actual= null;
 				
 				for(int i=0; i<numElementos;i++){
 					actual= servicios[i];
 					if(actual!=null){
 					
-						keyActual= obtenerKeyPorRango15M(menorFecha.trip_start_timestamp, actual.trip_start_timestamp);
+						keyActual= obtenerKeyPorRango15M(actual.trip_start_timestamp);
 						listaActual= arbolConServiciosRango.get(keyActual);
 					
 					if(listaActual==null){
@@ -498,52 +491,35 @@ public class TaxiTripsManager implements ITaxiTripsManager
 					}
 					}
 				}
-				Integer keyValorActual=obtenerKeyPorRango15M(menorFecha.trip_start_timestamp, fecha+"T"+hora);
+				Date keyValorActual=obtenerKeyPorRango15M(fecha+"T"+hora);
 				
 				return arbolConServiciosRango.get(keyValorActual);
 			}
 
-			public int obtenerKeyPorRango15M(String fechaPrimerServicio, String fechaActual ){
+			public Date obtenerKeyPorRango15M(String fechaActual ){
 				
 				SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
-		        try {
-		        	String[] fechaPS= fechaPrimerServicio.split("T");
+		        
+		        	String[] fechaPS= fechaActual.split("T");
 		        	String[]  horaPS=fechaPS[1].split(":");
-		        	fechaPrimerServicio= fechaPS[0]+ "T" + horaPS[0]+ ":00:00";
 		        	
+		        	fechaActual= fechaPS[0]+ "T" + horaPS[0] + ":00:00";
 		        	
-		        	Date fechaDatePrimerS = formato.parse(fechaPrimerServicio);
-		        	Date fechaDate= formato.parse(fechaActual);
+		        	int actualMinutos = Integer.parseInt(horaPS[1]);
+		        	
+		        	Integer modulo= actualMinutos-(actualMinutos%15);
+		        	
+		        	String date= fechaPS[0]+ "T" + horaPS[0]+ ":"+ ((modulo==0)?("00"):(modulo)) + ":00";
+		        	
+		        	Date fechaDate=null;
+					try {
+						fechaDate = formato.parse(date);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 		            
-		            Date inicioRango=fechaDatePrimerS;
-		            Date finRango=fechaDatePrimerS;
-		            Calendar calendar = Calendar.getInstance();
-	                Integer rtaNumRango=0;
-		            while(true){
-		            	
-		            	calendar.setTime(inicioRango); 
-		                calendar.add(Calendar.MINUTE,15);
-		                finRango= calendar.getTime();
-		                
-		                
-		                if(inicioRango.compareTo(fechaDate)>=0&&finRango.compareTo(fechaDate)<0){
-		                	return rtaNumRango;
-		                }
-		                
-		                System.out.println(inicioRango);
-		                rtaNumRango++;
-		                inicioRango=finRango;
-		                
-		            }
-		            
-		        } 
-		        catch (ParseException ex) 
-		        {
-		          ex.printStackTrace();
-				}
-				
-				
-				return 0;
+		            return fechaDate;
 				
 				
 			}

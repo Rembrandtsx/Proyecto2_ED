@@ -207,11 +207,11 @@ case 2: //1A
 				}
 
 				// Req 1B
-				IList<Servicio> listaServicios2 = Controller.R1B(distanciaMinima, distanciaMaxima);
-				for(Servicio s : listaServicios2){
-					System.out.println("IdTaxi: " + s.getTaxiId()
-							         + "  IdServicio: "+ s.getTripId()
-							         + "  Distancia: "+ s.getTripMiles());
+				LinkedSimpleList<Servicio> listaServicios2 = (LinkedSimpleList<Servicio>) Controller.R1B(distanciaMinima, distanciaMaxima);
+				for(int i = 0; i<listaServicios2.size() ;i++){
+					System.out.println("IdTaxi: " + listaServicios2.get(i).getTaxiId()
+							         + "  IdServicio: "+ listaServicios2.get(i).getTripId()
+							         + "  Distancia: "+ listaServicios2.get(i).getTripMiles());
 				}
 
 				break;

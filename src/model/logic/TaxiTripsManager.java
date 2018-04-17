@@ -411,24 +411,30 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 			}
 
-
 			@Override
-			public IList<Servicio> B1ServiciosPorDistancia(double distanciaMinima, double distanciaMaxima) {
+			public LinkedSimpleList<Servicio> B1ServiciosPorDistancia(double distanciaMinima, double distanciaMaxima) {
 				
 				DecimalFormat df = new DecimalFormat("#.0");
 				distanciaMinima = Double.parseDouble(df.format(distanciaMinima));
 				distanciaMaxima = Double.parseDouble(df.format(distanciaMaxima));
 				
 				
-				Iterable keys = arbolServiciosXDistancia.keys(distanciaMinima, distanciaMaxima);
-				Iterator iterador = keys.iterator();
+				LinkedSimpleList<Double> keys = (LinkedSimpleList<Double>) arbolServiciosXDistancia.keys(distanciaMinima, distanciaMaxima);
+				
 				LinkedSimpleList<Servicio> listaRetorno = new LinkedSimpleList<Servicio>();
-				while(iterador.hasNext()) {
-					listaRetorno.addAList((LinkedSimpleList<Servicio>) iterador.next());				
+				for(int i=0 ; i <keys.size();i++) {
+					
+					listaRetorno.addAList(arbolServiciosXDistancia.get((Double) keys.get(i)));
 				}
+					
 				
 				
-				
+				for (int i = 0; i < listaRetorno.size(); i++) {
+					System.out.println("--------");
+					System.out.println(listaRetorno.get(i));
+					System.err.println(listaRetorno.get(i).id);
+				}
+				System.out.println(listaRetorno.size());
 				
 				
 				return listaRetorno;

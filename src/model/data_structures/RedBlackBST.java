@@ -381,7 +381,7 @@ public class RedBlackBST<K extends Comparable<K>, V> {
     } 
 
     public Iterable<K> keys() {
-        if (isEmpty()) return (Iterable<K>) new Queue<K>();
+        if (isEmpty()) return (Iterable<K>) new LinkedSimpleList<K>();
         return keys(min(), max());
     }
 
@@ -389,19 +389,19 @@ public class RedBlackBST<K extends Comparable<K>, V> {
         if (lo == null) throw new IllegalArgumentException("Primer Argumento es Null");
         if (hi == null) throw new IllegalArgumentException("Segundo Argumento es Null");
 
-        Queue<K> queue = new Queue<K>();
+        LinkedSimpleList<K> list = new LinkedSimpleList<K>();
         // if (isEmpty() || lo.compareTo(hi) > 0) return queue;
-        keys(root, queue, lo, hi);
-        return (Iterable<K>) queue;
+        keys(root, list, lo, hi);
+        return (Iterable<K>) list;
     } 
 
-    private void keys(Node x, Queue<K> queue, K lo, K hi) { 
+    private void keys(Node x, LinkedSimpleList<K> list, K lo, K hi) { 
         if (x == null) return; 
         int cmplo = lo.compareTo(x.key); 
         int cmphi = hi.compareTo(x.key); 
-        if (cmplo < 0) keys(x.left, queue, lo, hi); 
-        if (cmplo <= 0 && cmphi >= 0) queue.enqueue(x.key); 
-        if (cmphi > 0) keys(x.right, queue, lo, hi); 
+        if (cmplo < 0) keys(x.left, list, lo, hi); 
+        if (cmplo <= 0 && cmphi >= 0) list.add(x.key); 
+        if (cmphi > 0) keys(x.right, list, lo, hi); 
     } 
 
  

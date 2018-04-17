@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -38,6 +40,7 @@ import model.logic.utils.ComparatorTaxiPorIdAlfabeticamente;
 import model.logic.utils.ComparatorTaxiPorPuntos;
 import model.logic.utils.HeapSort;
 import model.logic.utils.Merge;
+import model.logic.utils.Ordenamiento;
 import model.vo.Compania;
 import model.vo.CompaniaServicios;
 import model.vo.CompaniaTaxi;
@@ -72,7 +75,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	private SymbolTableSC<Integer, Servicio> hashTableServiciosDuracion;
 	
-	private RedBlackBST<Integer, LinkedSimpleList<Servicio>> arbolServiciosXDistancia;
+	private RedBlackBST<Double, LinkedSimpleList<Servicio>> arbolServiciosXDistancia;
 	
 	private SymbolTableSC<String, Servicio> hashTableServiciosZonasXY;
 	
@@ -227,6 +230,22 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 				numElementos++;
 				pos++;
+				
+				
+				//1B------------------------------------------------
+				DecimalFormat df = new DecimalFormat("#.0");
+				Double trip_miles1b= Double.parseDouble(df.format(trip_miles));
+				
+				if(arbolServiciosXDistancia.contains(trip_miles1b)) {
+					LinkedSimpleList<Servicio> lista = arbolServiciosXDistancia.get(trip_miles1b);
+					lista.add(servicioActual);
+				}else {
+					LinkedSimpleList<Servicio> lista = new LinkedSimpleList<Servicio>();
+					lista.add(servicioActual);
+					arbolServiciosXDistancia.put(trip_miles1b, lista);
+				}
+				//--------------------------------------------------
+				
 				
 				
 	}
@@ -395,8 +414,24 @@ public class TaxiTripsManager implements ITaxiTripsManager
 
 			@Override
 			public IList<Servicio> B1ServiciosPorDistancia(double distanciaMinima, double distanciaMaxima) {
-				// TODO Auto-generated method stub
-				return new LinkedSimpleList<Servicio>();
+				
+				DecimalFormat df = new DecimalFormat("#.0");
+				distanciaMinima = Double.parseDouble(df.format(distanciaMinima));
+				distanciaMaxima = Double.parseDouble(df.format(distanciaMaxima));
+				
+				
+				Iterable keys = arbolServiciosXDistancia.keys(distanciaMinima, distanciaMaxima);
+				Iterator iterador = keys.iterator();
+				LinkedSimpleList<Servicio> listaRetorno = new LinkedSimpleList<Servicio>();
+				while(iterador.hasNext()) {
+					listaRetorno.addAList((LinkedSimpleList<Servicio>) iterador.next());				
+				}
+				
+				
+				
+				
+				
+				return listaRetorno;
 			}
 
 

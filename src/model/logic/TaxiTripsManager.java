@@ -77,13 +77,16 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	private RedBlackBST<Double, LinkedSimpleList<Servicio>> arbolServiciosXDistancia;
 	
-	private SymbolTableSC<String, Servicio> hashTableServiciosZonasXY;
+	private SymbolTableLP<String, RedBlackBST<String, LinkedSimpleList<Servicio>>> hashTableServiciosZonasXY;
 	
 	private RedBlackBST<Date, LinkedSimpleList<Servicio>> arbolServiciosOrdenCrono;
 	
 	private HeapSort<Servicio> heapSort;
 	
 	private int numElementos;
+	
+	
+	
 	
 	
 	
@@ -107,7 +110,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			arbolServiciosXDistancia= new RedBlackBST<>();
 		}
 		if(hashTableServiciosZonasXY==null){
-			hashTableServiciosZonasXY= new SymbolTableSC<>(101);
+			hashTableServiciosZonasXY= new SymbolTableLP<>(101);
 		}
 		if(arbolServiciosOrdenCrono==null){
 			arbolServiciosOrdenCrono= new RedBlackBST<>();
@@ -246,7 +249,23 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				}
 				//--------------------------------------------------
 				
+				//2B------------------------------------------
 				
+				String keyArbol = new String(pickup_community_area+"-"+dropoff_community_area);
+				RedBlackBST<String, LinkedSimpleList<Servicio>> arbolXY = hashTableServiciosZonasXY.get(keyArbol)!=null? hashTableServiciosZonasXY.get(keyArbol) : new RedBlackBST<String, LinkedSimpleList<Servicio>>();
+				LinkedSimpleList<Servicio> listaXY = arbolXY.get(trip_start_timestamp)!=null? arbolXY.get(trip_start_timestamp) : new LinkedSimpleList<Servicio>();
+				listaXY.add(servicioActual);
+				Ordenamiento ord = new Ordenamiento<>();
+				ord.mergeSortLinkedList(listaXY);
+				arbolXY.put(trip_start_timestamp, listaXY);
+				hashTableServiciosZonasXY.put(keyArbol, arbolXY);
+				
+				
+				//--------------------------------------------------
+				
+				
+				//2C------------------------------------------
+				//--------------------------------------------------
 				
 	}
 			
@@ -443,8 +462,21 @@ public class TaxiTripsManager implements ITaxiTripsManager
 
 			@Override
 			public IList<Servicio> B2ServiciosPorZonaRecogidaYLlegada(int zonaInicio, int zonaFinal, String fechaI, String fechaF, String horaI, String horaF) {
-				// TODO Auto-generated method stub
-				return new LinkedSimpleList<Servicio>();
+				LinkedSimpleList<Servicio> lista = new LinkedSimpleList<Servicio>();
+				String identificador =new  String(zonaInicio+"-"+zonaFinal);
+				RedBlackBST<String, LinkedSimpleList<Servicio>> arbolXY = hashTableServiciosZonasXY.get(identificador);
+				Ordenamiento ord = new Ordenamiento<>();
+				if(arbolXY!=null)
+				{
+					LinkedSimpleList<Servicio> list2 = arbolXY.keys(fechaI+"T"+horaI, fechaF+"T"+horaF);
+					for (int i = 0; i < list2.size(); i++) 
+					{
+						for (int j = 0; j < arbolXY.get(list2.get(i)).size(); j++)
+						{
+							listica.add(lista.get(i).get(j));
+						}
+					}
+				}
 			}
 
 
@@ -573,39 +605,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 
 			// 1B
 			
-			public LinkedSimpleList<Servicio> darServiciosPorDistanciaRecorridaMillas(String dis){
-				
-				
-				//Crea la tabla Hash CON LINEAR PROBING y se adicionan elementos
-				Servicio actual;
-				LinkedSimpleList<Servicio> temp;
-				ISymbolTable<Integer, LinkedSimpleList<Servicio>> serviciosReq1b= new SymbolTableLP(101);
-				
-				double keySearch= (Double.parseDouble(dis));
-				int keyCurrent= 0;
-				
-				for(int i=0;i<servicios.length;i++){
-					actual= servicios[i];
-					
-					if(actual!=null){
-						//Obtiene llave por la distancia.
-						keyCurrent= obtenerKeyAPartirDeRangoPeqDistancia(actual.getTripMiles());
-						temp= serviciosReq1b.get(keyCurrent);
-					
-						if(temp==null){
-								temp= new LinkedSimpleList<>();
-								temp.add(actual);
-								serviciosReq1b.put(keyCurrent,temp);
-							}
-						else{
-							temp.add(actual);
-						}
-					}
-					
-				}
-				//Retorna de la tabla Hash el conjunto de consulta.
-				return serviciosReq1b.get((int) keySearch);
-			}
+			
 			
 			public int obtenerKeyAPartirDeRangoPeqDistancia(double dis){
 				

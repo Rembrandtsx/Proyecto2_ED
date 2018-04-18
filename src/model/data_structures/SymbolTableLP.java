@@ -2,7 +2,7 @@ package model.data_structures;
 
 import java.util.Iterator;
 
-public class SymbolTableLP<K extends Comparable<K>,  V extends Comparable<V>> implements ISymbolTable<K, V>{
+public class SymbolTableLP<K extends Comparable<K>,  V > {
 
 	
 	
@@ -132,7 +132,6 @@ public class SymbolTableLP<K extends Comparable<K>,  V extends Comparable<V>> im
 		
 	}
 	
-	@Override
 	public void put(K pkey, V value) {
 		// TODO Auto-generated method stub
 		if(pkey==null){
@@ -187,7 +186,6 @@ public class SymbolTableLP<K extends Comparable<K>,  V extends Comparable<V>> im
 	
 	}
 
-	@Override
 	public V get(K pKey) {
 		// TODO Auto-generated method stub
 		int pos= hash(pKey);
@@ -198,7 +196,7 @@ public class SymbolTableLP<K extends Comparable<K>,  V extends Comparable<V>> im
 		return null;
 	}
 
-	@Override
+	
 	public void delete(K pKey) {
 		// TODO Auto-generated method stub
 		if(pKey==null){
@@ -213,7 +211,7 @@ public class SymbolTableLP<K extends Comparable<K>,  V extends Comparable<V>> im
 		}
 	}
 
-	@Override
+	
 	public boolean contains(K pKey) {
 		// TODO Auto-generated method stub
 		if(pKey==null){
@@ -225,7 +223,7 @@ public class SymbolTableLP<K extends Comparable<K>,  V extends Comparable<V>> im
 		return false;
 	}
 
-	@Override
+	
 	public boolean isEmpty() {
 		// TODO Auto-generated method stub
 		
@@ -235,7 +233,7 @@ public class SymbolTableLP<K extends Comparable<K>,  V extends Comparable<V>> im
 		return false;
 	}
 
-	@Override
+	
 	public int size() {
 		// TODO Auto-generated method stub
 		return size;
@@ -245,7 +243,7 @@ public class SymbolTableLP<K extends Comparable<K>,  V extends Comparable<V>> im
 		return capacity;
 	}
 
-	@Override
+	
 	public Iterator<K> Keys() {
 		// TODO Auto-generated method stub
 		LinkedSimpleList<K> temp= new LinkedSimpleList<>();

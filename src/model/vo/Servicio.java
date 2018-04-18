@@ -45,6 +45,8 @@ public class Servicio implements Comparable<Servicio>{
 	/**Ganancia por el servicio (lo que el usuario paga por la carrera)*/
 	public double trip_total;
 	
+	
+	
 	/**
 	 * @param id
 	 * @param dropoff_census_tract

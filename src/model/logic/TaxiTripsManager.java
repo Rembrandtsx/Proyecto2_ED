@@ -69,7 +69,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	//Declaracion de estructuras de datos
 	private ArrayList<TaxiConPuntos> taxis;
 	
-	private RedBlackBST<String, LinkedSimpleList<Taxi>> arbolCompanhias;
+	private RedBlackBST<String, LinkedSimpleList<TaxiConServicios>> arbolCompanhias;
 	
 	private SymbolTableSC<Integer, Servicio> hashTableServiciosArea;
 	
@@ -191,17 +191,36 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				taxiActual= new Taxi(taxi_id, company);
 				
 				
-				
-				LinkedSimpleList<Taxi> listArbol=arbolCompanhias.get(company);
+				TaxiConServicios taxiConServiciosActual= new TaxiConServicios(taxi_id, company);
+				LinkedSimpleList<TaxiConServicios> listArbol=arbolCompanhias.get(company);
 				
 				if(listArbol==null){
 					listArbol= new LinkedSimpleList<>();
-					listArbol.add(taxiActual);
+					taxiConServiciosActual.agregarServicio(servicioActual);
+					taxiConServiciosActual.getMisServiciosHashTable().put(pickup_community_area, servicioActual);
+					listArbol.add(taxiConServiciosActual);
 					arbolCompanhias.put(company, listArbol);
+					
 				}else{
-					Taxi temp= estaAgregadaCompan(listArbol, taxi_id);
+					TaxiConServicios temp= estaAgregadaCompan(listArbol, taxi_id);
+					
 					if(temp==null){
-					listArbol.add(taxiActual);
+						taxiConServiciosActual.agregarServicio(servicioActual);
+						taxiConServiciosActual.getMisServiciosHashTable().put(pickup_community_area, servicioActual);
+						listArbol.add(taxiConServiciosActual);
+						
+					}else{
+						taxiConServiciosActual.agregarServicio(servicioActual);
+						temp.setServiciosHashTable(pickup_community_area, servicioActual);
+						
+						LinkedSimpleList<Servicio> tempOrd= (LinkedSimpleList<Servicio>) temp.getServicios(); 
+						Servicio[] ordenar= new Servicio[tempOrd.size()];
+				        for(int j=0; j<tempOrd.size();j++){
+				        	ordenar[j]= tempOrd.get(j);
+				        }
+				        heapSort.heapSortAscendentemente(ordenar, new ComparatorServicioPorFechaHora());
+				        temp.setServicios(tempOrd);
+				        
 					}
 				}
 				//Estructuras parte A
@@ -216,16 +235,20 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 				if(estaAgregadoTaxiConPuntos(taxis, taxi_id)==null){
 					TaxiConPuntos t= new TaxiConPuntos(taxi_id, company);
+					if(trip_miles>0&&trip_total>0){
 					t.setMillas(trip_miles);
 					t.setDinero(trip_total);
 					t.aumentarNumServicios();
 					taxis.add(t);
+					}
 				}
 				else{
 					TaxiConPuntos temp= (TaxiConPuntos) estaAgregadoTaxiConPuntos(taxis, taxi_id);
+					if(trip_miles>0&&trip_total>0){
 					temp.setDinero(trip_total);
 					temp.setMillas(trip_miles);
 					temp.aumentarNumServicios();
+					}
 				}
 				
 				numElementos++;
@@ -233,7 +256,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 				
 				//1B------------------------------------------------
-				DecimalFormat df = new DecimalFormat("#.0");
+				DecimalFormat df = new DecimalFormat("#,0");
 				Double trip_miles1b= Double.parseDouble(df.format(trip_miles));
 				
 				if(arbolServiciosXDistancia.contains(trip_miles1b)) {
@@ -351,9 +374,9 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				return null;
 			}
 			//Proyecto 2
-			public Taxi estaAgregadaCompan(LinkedSimpleList<Taxi> p, String pId){
+			public TaxiConServicios estaAgregadaCompan(LinkedSimpleList<TaxiConServicios> p, String pId){
 				
-				Taxi actual;
+				TaxiConServicios actual;
 				for(int i=0; i<p.size(); i++){
 					actual= p.get(i);
 					if(actual.getTaxiId().equals(pId)){
@@ -370,36 +393,35 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			@Override
 			public IList<TaxiConServicios> A1TaxiConMasServiciosEnZonaParaCompania(int zonaInicio, String compania) {
 				// TODO Auto-generated method stub
-				LinkedSimpleList<SimpleNodeSymbolTable<Integer, Servicio>> serviciosArea= hashTableServiciosArea.getNode(zonaInicio);
-				String companhia= compania.replace(" ", "");
-				LinkedSimpleList<Taxi> taxisCompa= arbolCompanhias.get(companhia);
-				
-				int numSerMayor=0;
-				LinkedSimpleList<TaxiConServicios> mayores= new LinkedSimpleList<TaxiConServicios>();
+				LinkedSimpleList<TaxiConServicios> taxisCompanhia= arbolCompanhias.get(compania);
 				
 				TaxiConServicios actual= null;
 				int numSerActual= 0;
 				
-				if(taxisCompa!=null){
-				for(int i=0; i<taxisCompa.size();i++){
-					actual= new TaxiConServicios(taxisCompa.get(i).getTaxiId(), taxisCompa.get(i).getCompany());
+				int numSerMayor=0;
+				LinkedSimpleList<TaxiConServicios> mayores= new LinkedSimpleList<TaxiConServicios>();
+				
+				if(taxisCompanhia!=null){
+				for(int i=0; i<taxisCompanhia.size();i++){
+					actual= taxisCompanhia.get(i);
 					
-					for(int j=0; j<serviciosArea.size();j++){
-						if(serviciosArea.get(j).getElement().getTaxiId().equals(actual.getTaxiId())){
-							actual.agregarServicio(serviciosArea.get(j).getElement());
-							numSerActual++;
-						}
-					}
+					numSerActual= actual.getMisServiciosHashTable().getList(zonaInicio).size();
+					
 					if(numSerActual>numSerMayor){
 						mayores= new LinkedSimpleList<>();
+						
 						mayores.add(actual);
 					}
 					else if(numSerActual==numSerMayor){
 						mayores.add(actual);
 					}
+				
 				}
 				}
 				return mayores;
+			
+			
+				
 			
 			}
 

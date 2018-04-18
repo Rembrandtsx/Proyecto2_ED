@@ -293,6 +293,7 @@ case 2: //1A
 				         + "  PuntosTaxi: "+ actual1C.getPuntos());
 				    }
 				}else{
+					System.out.println("Primeros 5 elementos: ");
 					for(int i=0; i<5;i++){
 						actual1C= taxis[i];
 						if(actual1C!=null){
@@ -300,7 +301,8 @@ case 2: //1A
 				         + "  PuntosTaxi: "+ actual1C.getPuntos());
 						}
 				    }
-					for(int i=taxis.length-1; i>taxis.length-6;i--){
+					System.out.println("Ultimos 5 elementos: ");
+					for(int i=taxis.length-5; i<taxis.length;i++){
 						actual1C= taxis[i];
 						if(actual1C!=null){
 							System.out.println("IdTaxi: " + actual1C.getTaxiId()

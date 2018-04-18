@@ -7,6 +7,7 @@ import model.data_structures.HeapBinario;
 import model.vo.Servicio;
 import model.vo.Taxi;
 import model.vo.TaxiConPuntos;
+import model.vo.TaxiConServicios;
 
 public class  HeapSort<V extends Comparable<V>>{
 
@@ -16,7 +17,7 @@ public class  HeapSort<V extends Comparable<V>>{
     	
     	HeapBinario<Taxi> heapB= new HeapBinario(comparador);
     	
-    	for(int j=1; j<a.length;j++){
+    	for(int j=0; j<a.length;j++){
     		
     		heapB.swim(a[j]);
     		
@@ -24,7 +25,29 @@ public class  HeapSort<V extends Comparable<V>>{
     	
     	Taxi actual2= heapB.sink();
     	
-    	for(int i=heapB.size(); i>0;i--){
+    	for(int i=heapB.size()-1; i>=0;i--){
+    		
+    		a[i]=actual2;
+    		actual2= heapB.sink();
+    		
+    		
+    	}
+    	
+    	
+    }
+	public static void heapSortAscendentemente(TaxiConServicios[] a, Comparator<TaxiConServicios> comparador){
+    	
+    	HeapBinario<TaxiConServicios> heapB= new HeapBinario(comparador);
+    	
+    	for(int j=0; j<a.length;j++){
+    		
+    		heapB.swim(a[j]);
+    		
+    	}
+    	
+    	TaxiConServicios actual2= heapB.sink();
+    	
+    	for(int i=heapB.size()-1; i>=0;i--){
     		
     		a[i]=actual2;
     		actual2= heapB.sink();
@@ -38,7 +61,7 @@ public class  HeapSort<V extends Comparable<V>>{
 	    	
 	    	HeapBinario<TaxiConPuntos> heapB= new HeapBinario(comparador);
 	    	
-	    	for(int j=1; j<a.length;j++){
+	    	for(int j=0; j<a.length;j++){
 	    		
 	    		heapB.swim(a[j]);
 	    		
@@ -46,7 +69,7 @@ public class  HeapSort<V extends Comparable<V>>{
 	    	
 	    	TaxiConPuntos actual2= heapB.sink();
 	    	
-	    	for(int i=heapB.size(); i>0;i--){
+	    	for(int i=heapB.size()-1; i>=0;i--){
 	    		
 	    		a[i]=actual2;
 	    		actual2= heapB.sink();
@@ -60,18 +83,18 @@ public class  HeapSort<V extends Comparable<V>>{
 	    	
 	    	HeapBinario<Servicio> heapB= new HeapBinario(comparador);
 	    	
-	    	for(int j=1; j<a.length;j++){
+	    	for(int j=0; j<a.length;j++){
 	    		
 	    		heapB.swim(a[j]);
 	    		
 	    	}
 	    	Servicio actual2= heapB.sink();
 	    	
-	    	for(int i=heapB.size(); i>0;i--){
+	    	for(int i=a.length-1; i>0;i--){
 	    		
 	    		a[i]=actual2;
 	    		actual2= heapB.sink();
-	    		System.out.println(i);
+	    		
 	    		
 	    	}
 	    	
@@ -81,7 +104,7 @@ public class  HeapSort<V extends Comparable<V>>{
 	    	
 	    	HeapBinario<V> heapB= new HeapBinario(comparador);
 	    	
-	    	for(int j=1; j<a.length;j++){
+	    	for(int j=0; j<a.length;j++){
 	    		
 	    		heapB.swim(a[j]);
 	    		
@@ -89,7 +112,7 @@ public class  HeapSort<V extends Comparable<V>>{
 	    	
 	    	V actual2= heapB.sink();
 	    	
-	    	for(int i=heapB.size(); i>0;i--){
+	    	for(int i=heapB.size()-1; i>=0;i--){
 	    		
 	    		a[i]=actual2;
 	    		actual2= heapB.sink();

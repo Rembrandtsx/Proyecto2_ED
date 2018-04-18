@@ -91,6 +91,10 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	
 	private LinkedSimpleList<Servicio> serviciosTotal;
+	private double sumaLatServicios;
+	private double sumaLongServicios;
+	private int numServiciosTotal;
+	private LinkedSimpleList<Servicio> servicios2;
 	
 	@Override //1C
 	public boolean cargarSistema(String direccionJson) 
@@ -265,6 +269,15 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 				
 				//2C------------------------------------------
+				if(pickup_centroid_latitude !=0  && pickup_centroid_longitude != 0)
+				{
+					sumaLatServicios += pickup_centroid_latitude;
+					sumaLongServicios += pickup_centroid_longitude;
+					numServiciosTotal++;
+					servicios2.add(servicioActual);
+				}
+					SymbolTableSC<Double, RedBlackBST<String,LinkedSimpleList<Servicio>>> tabla2C = new SymbolTableSC<>();
+				
 				//--------------------------------------------------
 				
 	}

@@ -77,7 +77,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	private RedBlackBST<Double, LinkedSimpleList<Servicio>> arbolServiciosXDistancia;
 	
-	private SymbolTableLP<String, RedBlackBST<String, LinkedSimpleList<Servicio>>> hashTableServiciosZonasXY;
+	private SymbolTableLP<String, RedBlackBST<String, Servicio>> hashTableServiciosZonasXY;
 	
 	private RedBlackBST<Date, LinkedSimpleList<Servicio>> arbolServiciosOrdenCrono;
 	
@@ -255,29 +255,39 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 				//2B------------------------------------------
 				
-				String keyArbol = new String(pickup_community_area+"-"+dropoff_community_area);
-				RedBlackBST<String, LinkedSimpleList<Servicio>> arbolXY = hashTableServiciosZonasXY.get(keyArbol)!=null? hashTableServiciosZonasXY.get(keyArbol) : new RedBlackBST<String, LinkedSimpleList<Servicio>>();
-				LinkedSimpleList<Servicio> listaXY = arbolXY.get(trip_start_timestamp)!=null? arbolXY.get(trip_start_timestamp) : new LinkedSimpleList<Servicio>();
-				listaXY.add(servicioActual);
-				Ordenamiento ord = new Ordenamiento<>();
-				ord.mergeSortLinkedList(listaXY);
-				arbolXY.put(trip_start_timestamp, listaXY);
-				hashTableServiciosZonasXY.put(keyArbol, arbolXY);
+				String keyArbol = (pickup_community_area+"-"+dropoff_community_area);
+				
+				if (hashTableServiciosZonasXY.contains(keyArbol)) {
+					hashTableServiciosZonasXY.get(keyArbol).put(trip_start_timestamp, servicioActual);
+					System.out.println(hashTableServiciosZonasXY.get(keyArbol).get(trip_start_timestamp).getTaxiId());
+					
+				}else {
+					RedBlackBST<String, Servicio> arbolXY = new RedBlackBST<String, Servicio>();
+					arbolXY.put(trip_start_timestamp, servicioActual);
+					System.out.println(arbolXY.get(trip_start_timestamp).getTaxiId());
+					hashTableServiciosZonasXY.put(keyArbol, arbolXY);
+				}
+				
+				
+				
+				
+				
+				System.out.println("------------------- "+hashTableServiciosZonasXY.size());
 				
 				
 				//--------------------------------------------------
 				
 				
 				//2C------------------------------------------
-				if(pickup_centroid_latitude !=0  && pickup_centroid_longitude != 0)
-				{
-					sumaLatServicios += pickup_centroid_latitude;
-					sumaLongServicios += pickup_centroid_longitude;
-					numServiciosTotal++;
-					servicios2.add(servicioActual);
-				}
-					SymbolTableSC<Double, RedBlackBST<String,LinkedSimpleList<Servicio>>> tabla2C = new SymbolTableSC<>();
-				
+//				if(pickup_centroid_latitude !=0  && pickup_centroid_longitude != 0)
+//				{
+//					sumaLatServicios += pickup_centroid_latitude;
+//					sumaLongServicios += pickup_centroid_longitude;
+//					numServiciosTotal++;
+//					servicios2.add(servicioActual);
+//				}
+//					//SymbolTableSC<Double, RedBlackBST<String,LinkedSimpleList<Servicio>>> tabla2C = new SymbolTableSC<>();
+//				
 				//--------------------------------------------------
 				
 	}
@@ -461,12 +471,6 @@ public class TaxiTripsManager implements ITaxiTripsManager
 					
 				
 				
-				for (int i = 0; i < listaRetorno.size(); i++) {
-					System.out.println("--------");
-					System.out.println(listaRetorno.get(i));
-					System.err.println(listaRetorno.get(i).id);
-				}
-				System.out.println(listaRetorno.size());
 				
 				
 				return listaRetorno;
@@ -476,20 +480,22 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			@Override
 			public IList<Servicio> B2ServiciosPorZonaRecogidaYLlegada(int zonaInicio, int zonaFinal, String fechaI, String fechaF, String horaI, String horaF) {
 				LinkedSimpleList<Servicio> lista = new LinkedSimpleList<Servicio>();
-				String identificador =new  String(zonaInicio+"-"+zonaFinal);
-				RedBlackBST<String, LinkedSimpleList<Servicio>> arbolXY = hashTableServiciosZonasXY.get(identificador);
-				Ordenamiento ord = new Ordenamiento<>();
-				if(arbolXY!=null)
-				{
-					LinkedSimpleList<Servicio> list2 = arbolXY.keys(fechaI+"T"+horaI, fechaF+"T"+horaF);
-					for (int i = 0; i < list2.size(); i++) 
-					{
-						for (int j = 0; j < arbolXY.get(list2.get(i)).size(); j++)
-						{
-							listica.add(lista.get(i).get(j));
-						}
-					}
+				String identificador = (zonaInicio+"-"+zonaFinal);
+				RedBlackBST<String, Servicio> arbolXY = hashTableServiciosZonasXY.get(identificador);
+				String fechaini= fechaI+"T"+horaI;
+				String fechaFini= fechaF+"T"+horaF;
+				
+				LinkedSimpleList<String> llaves= (LinkedSimpleList<String>) arbolXY.keys(fechaini,fechaFini);
+				for(int i = 0; i<llaves.size(); i++) {
+				
+					
+					lista.add(arbolXY.get(llaves.get(i)));
+					
 				}
+			
+			
+				
+				return lista;
 			}
 
 

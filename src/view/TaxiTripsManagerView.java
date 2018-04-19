@@ -259,13 +259,14 @@ case 2: //1A
 				String horaFinalReq2B = sc.next();
 
 				// Req 2B
-				IList<Servicio> listaServicios3 = Controller.R2B(idZonaRecogida, idZonaTerminacion, fechaInicialReq2B, fechaFinalReq2B, horaInicialReq2B, horaFinalReq2B);
-				for(Servicio s : listaServicios3){
-					System.out.println("Id Trip: "+ s.getTripId());
-					System.out.println("  Zona recogida: " + s.getPickupZone());
-					System.out.println("  Zona terminacion: " + s.getDropOffZone());
+				LinkedSimpleList<Servicio> listaServicios3 = (LinkedSimpleList<Servicio>) Controller.R2B(idZonaRecogida, idZonaTerminacion, fechaInicialReq2B, fechaFinalReq2B, horaInicialReq2B, horaFinalReq2B);
+				
+				for(int i= 0; i<listaServicios3.size();i++){
+					System.out.println("Id Trip: "+ listaServicios3.get(i).getTripId());
+					System.out.println("  Zona recogida: " + listaServicios3.get(i).getPickupZone());
+					System.out.println("  Zona terminacion: " + listaServicios3.get(i).getDropOffZone());
 					try {
-						System.out.println("  Hora inicial: " + s.getStartTime());
+						System.out.println("  Hora inicial: " + listaServicios3.get(i).getStartTime());
 					} catch (ParseException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

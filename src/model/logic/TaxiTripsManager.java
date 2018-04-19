@@ -77,7 +77,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	private RedBlackBST<Double, LinkedSimpleList<Servicio>> arbolServiciosXDistancia;
 	
-	private SymbolTableSC<String, Servicio> hashTableServiciosZonasXY;
+	private SymbolTableLP<String, RedBlackBST<String, Servicio>> hashTableServiciosZonasXY;
 	
 	private RedBlackBST<Date, LinkedSimpleList<Servicio>> arbolServiciosOrdenCrono;
 	
@@ -87,7 +87,14 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	
 	
+	
+	
+	
 	private LinkedSimpleList<Servicio> serviciosTotal;
+	private double sumaLatServicios;
+	private double sumaLongServicios;
+	private int numServiciosTotal;
+	private LinkedSimpleList<Servicio> servicios2;
 	
 	@Override //1C
 	public boolean cargarSistema(String direccionJson) 
@@ -107,7 +114,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			arbolServiciosXDistancia= new RedBlackBST<>();
 		}
 		if(hashTableServiciosZonasXY==null){
-			hashTableServiciosZonasXY= new SymbolTableSC<>(101);
+			hashTableServiciosZonasXY= new SymbolTableLP<>(101);
 		}
 		if(arbolServiciosOrdenCrono==null){
 			arbolServiciosOrdenCrono= new RedBlackBST<>();
@@ -188,16 +195,19 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 				
 				servicioActual= new Servicio(trip_id, dropoff_census_tract, dropoff_centroid_latitude, dropoff_type, droplat, droplong, dropoff_centroid_longitude, dropoff_community_area, extras, fare, payment_type, pickup_census_tract, pickup_centroid_latitude, pickup_type, picklat, picklong, pickup_centroid_longitude, pickup_community_area, taxiAutor, tips, tolls, trip_end_timestamp, trip_miles, trip_seconds, trip_start_timestamp, trip_total, company);
-				taxiActual= new Taxi(taxi_id, company);
+taxiActual= new Taxi(taxi_id, company);
 				
 				
 				TaxiConServicios taxiConServiciosActual= new TaxiConServicios(taxi_id, company);
+				
 				LinkedSimpleList<TaxiConServicios> listArbol=arbolCompanhias.get(company);
 				
+				
 				if(listArbol==null){
-					listArbol= new LinkedSimpleList<>();
+					
+					listArbol= new LinkedSimpleList<TaxiConServicios>();
 					taxiConServiciosActual.agregarServicio(servicioActual);
-					taxiConServiciosActual.getMisServiciosHashTable().put(pickup_community_area, servicioActual);
+					taxiConServiciosActual.setServiciosHashTable(pickup_community_area, servicioActual);
 					listArbol.add(taxiConServiciosActual);
 					arbolCompanhias.put(company, listArbol);
 					
@@ -206,21 +216,12 @@ public class TaxiTripsManager implements ITaxiTripsManager
 					
 					if(temp==null){
 						taxiConServiciosActual.agregarServicio(servicioActual);
-						taxiConServiciosActual.getMisServiciosHashTable().put(pickup_community_area, servicioActual);
+						taxiConServiciosActual.setServiciosHashTable(pickup_community_area, servicioActual);
 						listArbol.add(taxiConServiciosActual);
 						
 					}else{
-						taxiConServiciosActual.agregarServicio(servicioActual);
+						temp.agregarServicio(servicioActual);
 						temp.setServiciosHashTable(pickup_community_area, servicioActual);
-						
-						LinkedSimpleList<Servicio> tempOrd= (LinkedSimpleList<Servicio>) temp.getServicios(); 
-						Servicio[] ordenar= new Servicio[tempOrd.size()];
-				        for(int j=0; j<tempOrd.size();j++){
-				        	ordenar[j]= tempOrd.get(j);
-				        }
-				        heapSort.heapSortAscendentemente(ordenar, new ComparatorServicioPorFechaHora());
-				        temp.setServicios(tempOrd);
-				        
 					}
 				}
 				//Estructuras parte A
@@ -269,7 +270,42 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				}
 				//--------------------------------------------------
 				
+				//2B------------------------------------------
 				
+				String keyArbol = (pickup_community_area+"-"+dropoff_community_area);
+				
+				if (hashTableServiciosZonasXY.contains(keyArbol)) {
+					hashTableServiciosZonasXY.get(keyArbol).put(trip_start_timestamp, servicioActual);
+					System.out.println(hashTableServiciosZonasXY.get(keyArbol).get(trip_start_timestamp).getTaxiId());
+					
+				}else {
+					RedBlackBST<String, Servicio> arbolXY = new RedBlackBST<String, Servicio>();
+					arbolXY.put(trip_start_timestamp, servicioActual);
+					System.out.println(arbolXY.get(trip_start_timestamp).getTaxiId());
+					hashTableServiciosZonasXY.put(keyArbol, arbolXY);
+				}
+				
+				
+				
+				
+				
+				System.out.println("------------------- "+hashTableServiciosZonasXY.size());
+				
+				
+				//--------------------------------------------------
+				
+				
+				//2C------------------------------------------
+//				if(pickup_centroid_latitude !=0  && pickup_centroid_longitude != 0)
+//				{
+//					sumaLatServicios += pickup_centroid_latitude;
+//					sumaLongServicios += pickup_centroid_longitude;
+//					numServiciosTotal++;
+//					servicios2.add(servicioActual);
+//				}
+//					//SymbolTableSC<Double, RedBlackBST<String,LinkedSimpleList<Servicio>>> tabla2C = new SymbolTableSC<>();
+//				
+				//--------------------------------------------------
 				
 	}
 			
@@ -393,30 +429,43 @@ public class TaxiTripsManager implements ITaxiTripsManager
 			@Override
 			public IList<TaxiConServicios> A1TaxiConMasServiciosEnZonaParaCompania(int zonaInicio, String compania) {
 				// TODO Auto-generated method stub
+				compania= compania.replace(" ", "");
+				
 				LinkedSimpleList<TaxiConServicios> taxisCompanhia= arbolCompanhias.get(compania);
 				
 				TaxiConServicios actual= null;
+				TaxiConServicios temporalA= null;
 				int numSerActual= 0;
 				
 				int numSerMayor=0;
 				LinkedSimpleList<TaxiConServicios> mayores= new LinkedSimpleList<TaxiConServicios>();
 				
 				if(taxisCompanhia!=null){
-				for(int i=0; i<taxisCompanhia.size();i++){
-					actual= taxisCompanhia.get(i);
-					
-					numSerActual= actual.getMisServiciosHashTable().getList(zonaInicio).size();
-					
-					if(numSerActual>numSerMayor){
-						mayores= new LinkedSimpleList<>();
-						
-						mayores.add(actual);
-					}
-					else if(numSerActual==numSerMayor){
-						mayores.add(actual);
-					}
+						for(int i=0; i<taxisCompanhia.size();i++){
+							actual= taxisCompanhia.get(i);
+							
+							if(actual!=null&&actual.getMisServiciosHashTable().get(zonaInicio)!=null){
+								
+									numSerActual= actual.numeroServiciosXKeyHash(zonaInicio);
+									
+									if(numSerActual>numSerMayor){
+										mayores= new LinkedSimpleList<TaxiConServicios>();
+										temporalA= new TaxiConServicios(actual.getTaxiId(), actual.getCompania());
+										temporalA.setServicios((LinkedSimpleList<Servicio>) actual.getMisServiciosHashTable().get(zonaInicio));
+										mayores.add(temporalA);
+										numSerMayor=numSerActual;
+										numSerActual=0;
+									}
+									else if(numSerActual==numSerMayor){
+										
+										temporalA= new TaxiConServicios(actual.getTaxiId(), actual.getCompania());
+										temporalA.setServicios((LinkedSimpleList<Servicio>) actual.getMisServiciosHashTable().get(zonaInicio));
+										mayores.add(temporalA);
+										
+									}
+							}
+						}
 				
-				}
 				}
 				return mayores;
 			
@@ -424,6 +473,8 @@ public class TaxiTripsManager implements ITaxiTripsManager
 				
 			
 			}
+
+
 
 
 			@Override
@@ -451,12 +502,6 @@ public class TaxiTripsManager implements ITaxiTripsManager
 					
 				
 				
-				for (int i = 0; i < listaRetorno.size(); i++) {
-					System.out.println("--------");
-					System.out.println(listaRetorno.get(i));
-					System.err.println(listaRetorno.get(i).id);
-				}
-				System.out.println(listaRetorno.size());
 				
 				
 				return listaRetorno;
@@ -465,8 +510,23 @@ public class TaxiTripsManager implements ITaxiTripsManager
 
 			@Override
 			public IList<Servicio> B2ServiciosPorZonaRecogidaYLlegada(int zonaInicio, int zonaFinal, String fechaI, String fechaF, String horaI, String horaF) {
-				// TODO Auto-generated method stub
-				return new LinkedSimpleList<Servicio>();
+				LinkedSimpleList<Servicio> lista = new LinkedSimpleList<Servicio>();
+				String identificador = (zonaInicio+"-"+zonaFinal);
+				RedBlackBST<String, Servicio> arbolXY = hashTableServiciosZonasXY.get(identificador);
+				String fechaini= fechaI+"T"+horaI;
+				String fechaFini= fechaF+"T"+horaF;
+				
+				LinkedSimpleList<String> llaves= (LinkedSimpleList<String>) arbolXY.keys(fechaini,fechaFini);
+				for(int i = 0; i<llaves.size(); i++) {
+				
+					
+					lista.add(arbolXY.get(llaves.get(i)));
+					
+				}
+			
+			
+				
+				return lista;
 			}
 
 
@@ -595,39 +655,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 
 			// 1B
 			
-			public LinkedSimpleList<Servicio> darServiciosPorDistanciaRecorridaMillas(String dis){
-				
-				
-				//Crea la tabla Hash CON LINEAR PROBING y se adicionan elementos
-				Servicio actual;
-				LinkedSimpleList<Servicio> temp;
-				ISymbolTable<Integer, LinkedSimpleList<Servicio>> serviciosReq1b= new SymbolTableLP(101);
-				
-				double keySearch= (Double.parseDouble(dis));
-				int keyCurrent= 0;
-				
-				for(int i=0;i<servicios.length;i++){
-					actual= servicios[i];
-					
-					if(actual!=null){
-						//Obtiene llave por la distancia.
-						keyCurrent= obtenerKeyAPartirDeRangoPeqDistancia(actual.getTripMiles());
-						temp= serviciosReq1b.get(keyCurrent);
-					
-						if(temp==null){
-								temp= new LinkedSimpleList<>();
-								temp.add(actual);
-								serviciosReq1b.put(keyCurrent,temp);
-							}
-						else{
-							temp.add(actual);
-						}
-					}
-					
-				}
-				//Retorna de la tabla Hash el conjunto de consulta.
-				return serviciosReq1b.get((int) keySearch);
-			}
+			
 			
 			public int obtenerKeyAPartirDeRangoPeqDistancia(double dis){
 				

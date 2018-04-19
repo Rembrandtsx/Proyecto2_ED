@@ -288,6 +288,7 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 		if(first==null&&position==0){
 			first= new SimpleNode<T>(element);
 			size++;
+			return true;
 		}
 		return false;
 	}

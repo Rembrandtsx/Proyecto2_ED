@@ -1,5 +1,6 @@
 package api;
 
+import model.data_structures.ArrayList;
 import model.data_structures.IList;
 import model.vo.Servicio;
 import model.vo.Taxi;
@@ -78,7 +79,7 @@ public interface ITaxiTripsManager
      * @param longitud de referencia
 	 * @return
 	 */
-	public IList<Servicio> R2C_LocalizacionesGeograficas(String taxiIDReq2C, double millas, double latitud, double longitud);
+	public ArrayList<Servicio> R2C_LocalizacionesGeograficas(String taxiIDReq2C, double millas);
 	
 	/**
 	 * Metodo que permite retornar todos los servicios registrados por hora de recogida en el rango de 15 minutos mas cercano, 

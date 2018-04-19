@@ -649,9 +649,18 @@ taxiActual= new Taxi(taxi_id, company);
 			
 			
 			@Override
-			public IList<Servicio> R2C_LocalizacionesGeograficas(String taxiIDReq2C, double millasReq2C, double latitudReq2C, double longitudReq2C) {
-				// TODO Auto-generated method stub
-				return new LinkedSimpleList<Servicio>();
+			public ArrayList<Servicio> R2C_LocalizacionesGeograficas(String taxiIDReq2C, double millasReq2C) {
+				fillHarvesianHashTable();
+				try
+				{
+					return hashTable2c.get(millasReq2C).get(taxiIDReq2C);
+				}
+				catch(Exception e)
+				{
+					System.err.println("No existen las millas brindadas.");
+					System.out.println();
+					return  new ArrayList<Servicio>();
+				}
 			}
 
 			//---------------------------------------------------------------------

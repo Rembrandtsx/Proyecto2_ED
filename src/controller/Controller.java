@@ -1,6 +1,7 @@
 package controller;
 
 import api.ITaxiTripsManager;
+import model.data_structures.ArrayList;
 import model.data_structures.IList;
 import model.logic.TaxiTripsManager;
 import model.vo.Servicio;
@@ -49,9 +50,9 @@ public class Controller
 		return manager.R1C_OrdenarTaxisPorPuntos();
 	}	
 	//2C
-	public static IList<Servicio> R2C(String taxiIDReq2C, double millas, double latitud, double longitud)
+	public static ArrayList<Servicio> R2C(String taxiIDReq2C, double millas )
 	{
-		return manager.R2C_LocalizacionesGeograficas(taxiIDReq2C, millas, latitud, longitud);
+		return manager.R2C_LocalizacionesGeograficas(taxiIDReq2C, millas);
 	}
 	//3C
 	public static IList<Servicio> R3C(String fecha, String hora) 

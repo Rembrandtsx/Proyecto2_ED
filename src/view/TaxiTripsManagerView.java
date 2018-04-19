@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.Scanner;
 
 import controller.Controller;
+import model.data_structures.ArrayList;
 import model.data_structures.HeapBinario;
 import model.data_structures.IQueue;
 import model.data_structures.IStack;
@@ -314,11 +315,11 @@ case 2: //1A
 				break;
 
 			case 7: //2C
-				
+
 				System.out.println("Ingrese el id del taxi");
 				String taxiIDReq2C = sc.next();
 
-				
+
 				System.out.println("Ingrese la cantidad X de millas");
 				String millasReq2C = sc.next();
 				double millas = 0;
@@ -331,44 +332,31 @@ case 2: //1A
 					System.out.println("Cantidad invalida");
 				}
 
-				
-				System.out.println("Ingrese la latitud de referencia");
-				String latitudReq2C = sc.next();
-				double latitud = 0;
-				try
-				{
-					 latitud = Double.parseDouble(latitudReq2C);
-				}
-				catch(Exception e)
-				{
-					System.out.println("Latitud invalida");
-				}
-				
-				System.out.println("Ingrese la longitud de referencia");
-				String longitudReq2C = sc.next();
-				double longitud = 0;
-				try
-				{
-					 longitud = Double.parseDouble(longitudReq2C);
-				}
-				catch(Exception e)
-				{
-					System.out.println("Latitud invalida");
-				}
 
 				// Req 2C
-				IList<Servicio> servicios2C = Controller.R2C(taxiIDReq2C, millas, latitud, longitud);
-     			
-				for(Servicio s : servicios2C)
+				ArrayList<Servicio> servicios2C = Controller.R2C(taxiIDReq2C, millas);
+				System.out.println();
+
+				if(servicios2C != null)
 				{
-					System.out.println();
-					System.out.println("Servicio: " + s.getTripId());
-					//TODO imprimir la latitud y la longitud de los servicios
-					System.out.println("  (Lat: " + s.getPickupLatitud() + ", Long: " + s.getPickupLongitud() + " )");
-					System.out.println("  Distancia (millas) a la referencia: " + "�<calcular>?");
+					for (int i = 0; i < servicios2C.size(); i++)
+					{
+						Servicio s = servicios2C.get(i);
+						System.out.println("Servicio: " + s.getTripId());
+						//TODO imprimir la latitud y la longitud de los servicios
+						System.out.println("  (Latitud: " + s.pickup_centroid_latitude + ", Longitud: " + s.pickup_centroid_longitude + " )");
+						System.out.println("  Distancia (millas) a la referencia: " + s.getHarvesianDistance());
+						System.out.println();
+					}
 				}
-			
+				else
+				{
+					System.out.println("El taxi con ID "+taxiIDReq2C + " no tiene servicios con millas harvesianas de "+millas);
+					System.out.println();
+				}
+
 				break;
+
 
 			case 8: //3C
 				

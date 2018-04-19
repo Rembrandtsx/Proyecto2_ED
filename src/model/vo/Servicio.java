@@ -44,7 +44,7 @@ public class Servicio implements Comparable<Servicio>{
 	public String trip_end_timestamp;
 	/**Ganancia por el servicio (lo que el usuario paga por la carrera)*/
 	public double trip_total;
-	
+	 private double harvesian;
 	
 	
 	/**
@@ -272,6 +272,14 @@ public class Servicio implements Comparable<Servicio>{
         //TODO Auto-generated method stub
         return -1;
     }
+
+	public void setHarvesianDistance(double distanceHarv) {
+		
+		harvesian = distanceHarv;
+	}
+	public double getHarvesianDistance() {
+		return harvesian;
+	}
 
     
 }

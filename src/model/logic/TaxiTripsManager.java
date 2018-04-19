@@ -32,6 +32,7 @@ import model.data_structures.IList;
 import model.data_structures.LinkedSimpleList;
 import model.data_structures.Queue;
 import model.data_structures.RedBlackBST;
+import model.data_structures.SeparateChainingHashST;
 import model.data_structures.SimpleNodeSymbolTable;
 import model.data_structures.Stack;
 import model.data_structures.SymbolTableLP;
@@ -81,6 +82,8 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	
 	private SymbolTableLP<String, RedBlackBST<String, Servicio>> hashTableServiciosZonasXY;
 	
+	private SeparateChainingHashST<Double, RedBlackBST<String , ArrayList<Servicio>>> hashTable2c;
+	
 	private RedBlackBST<Date, LinkedSimpleList<Servicio>> arbolServiciosOrdenCrono;
 	
 	private HeapSort<Servicio> heapSort;
@@ -96,7 +99,7 @@ public class TaxiTripsManager implements ITaxiTripsManager
 	private double sumaLatServicios;
 	private double sumaLongServicios;
 	private int numServiciosTotal;
-	private LinkedSimpleList<Servicio> servicios2;
+	private ArrayList<Servicio> servicios2 = new ArrayList<>();
 	
 	@Override //1C
 	public boolean cargarSistema(String direccionJson) 
@@ -120,6 +123,9 @@ public class TaxiTripsManager implements ITaxiTripsManager
 		}
 		if(arbolServiciosOrdenCrono==null){
 			arbolServiciosOrdenCrono= new RedBlackBST<>();
+		}
+		if(hashTable2c==null) {
+			hashTable2c = new SeparateChainingHashST<>();
 		}
 		if(heapSort==null){
 			heapSort= new HeapSort<>();
@@ -259,10 +265,14 @@ taxiActual= new Taxi(taxi_id, company);
 				
 				
 				//1B------------------------------------------------
+				
 				BigDecimal bd = new BigDecimal(trip_miles);
 				bd = bd.setScale(1, RoundingMode.HALF_UP);
 				
+				
 				Double trip_miles1b= bd.doubleValue();
+								
+				
 				
 				if(arbolServiciosXDistancia.contains(trip_miles1b)) {
 					LinkedSimpleList<Servicio> lista = arbolServiciosXDistancia.get(trip_miles1b);
@@ -280,12 +290,12 @@ taxiActual= new Taxi(taxi_id, company);
 				
 				if (hashTableServiciosZonasXY.contains(keyArbol)) {
 					hashTableServiciosZonasXY.get(keyArbol).put(trip_start_timestamp, servicioActual);
-					System.out.println(hashTableServiciosZonasXY.get(keyArbol).get(trip_start_timestamp).getTaxiId());
+					
 					
 				}else {
 					RedBlackBST<String, Servicio> arbolXY = new RedBlackBST<String, Servicio>();
 					arbolXY.put(trip_start_timestamp, servicioActual);
-					System.out.println(arbolXY.get(trip_start_timestamp).getTaxiId());
+					
 					hashTableServiciosZonasXY.put(keyArbol, arbolXY);
 				}
 				
@@ -293,22 +303,27 @@ taxiActual= new Taxi(taxi_id, company);
 				
 				
 				
-				System.out.println("------------------- "+hashTableServiciosZonasXY.size());
+				
 				
 				
 				//--------------------------------------------------
 				
 				
 				//2C------------------------------------------
-//				if(pickup_centroid_latitude !=0  && pickup_centroid_longitude != 0)
-//				{
-//					sumaLatServicios += pickup_centroid_latitude;
-//					sumaLongServicios += pickup_centroid_longitude;
-//					numServiciosTotal++;
-//					servicios2.add(servicioActual);
-//				}
-//					//SymbolTableSC<Double, RedBlackBST<String,LinkedSimpleList<Servicio>>> tabla2C = new SymbolTableSC<>();
-//				
+				
+
+				if(pickup_centroid_latitude != 0 && pickup_centroid_longitude != 0)
+				{
+					sumaLatServicios += pickup_centroid_latitude;
+					sumaLongServicios += pickup_centroid_longitude;
+					numServiciosTotal++;
+					System.out.println(servicioActual.id);
+					
+					servicios2.add(servicioActual);
+				}
+				
+				
+				
 				//--------------------------------------------------
 				
 	}
@@ -491,10 +506,13 @@ taxiActual= new Taxi(taxi_id, company);
 			@Override
 			public LinkedSimpleList<Servicio> B1ServiciosPorDistancia(double distanciaMinima, double distanciaMaxima) {
 				
-				DecimalFormat df = new DecimalFormat("#.0");
-				distanciaMinima = Double.parseDouble(df.format(distanciaMinima));
-				distanciaMaxima = Double.parseDouble(df.format(distanciaMaxima));
+				BigDecimal bd = new BigDecimal(distanciaMaxima);
+				bd = bd.setScale(1, RoundingMode.HALF_UP);
+				distanciaMaxima= bd.doubleValue();
 				
+				BigDecimal dd = new BigDecimal(distanciaMinima);
+				dd = dd.setScale(1, RoundingMode.HALF_UP);				
+				distanciaMinima= dd.doubleValue();
 				
 				LinkedSimpleList<Double> keys = (LinkedSimpleList<Double>) arbolServiciosXDistancia.keys(distanciaMinima, distanciaMaxima);
 				
@@ -547,13 +565,102 @@ taxiActual= new Taxi(taxi_id, company);
 				
 				return respuesta;
 			}
+			//------------------------------------------------------------------
+			
+			
+			
+			
+			//------------------------ 2 C----------------------------------------
+			
+			public double[] getDistanceOfReference()
+			{
+				double[] distanceRef = new double[2];
+				distanceRef[0] = (sumaLatServicios/numServiciosTotal);
+				distanceRef[1] = (sumaLongServicios/numServiciosTotal);
+				return distanceRef;
+			}
 
+			public double getDistanceHarv (double lat1, double lon1)
+			{
+				DecimalFormat format = new DecimalFormat("#.0");
+				final int R = 6371*1000; // Radious of the earth in meters
+				Double latDistance = Math.toRadians(getDistanceOfReference()[0]-lat1);
+				Double lonDistance = Math.toRadians(getDistanceOfReference()[1]-lon1);
+				Double a = Math.sin(latDistance/2) * Math.sin(latDistance/2) + Math.cos(Math.toRadians(lat1))
+				* Math.cos(Math.toRadians(getDistanceOfReference()[0])) * Math.sin(lonDistance/2) * Math.sin(lonDistance/2);
+				Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+				Double distance = R * c * 0.000621371;
+				Double finalDistance =  (Double.parseDouble(format.format(distance).replace(",", ".")));
+				return finalDistance;
+			}
+
+			public ArrayList<Servicio> setHarvesianDistancesOfServices()
+			{
+				for (int i = 0; i < servicios2.size(); i++) 
+				{
+					servicios2.get(i).setHarvesianDistance(getDistanceHarv(servicios2.get(i).pickup_centroid_latitude, servicios2.get(i).pickup_centroid_longitude));
+				}
+				//OrdenatorP<Servicio> ordenador = new OrdenatorP<Servicio>();
+				//ComparatorHarvesianDistance comparator = new ComparatorHarvesianDistance();
+				//ordenador.ordenar(Ordenamientos.MERGE, true, comparator, servicios);
+
+				return servicios2;
+			}
+
+
+			public void fillHarvesianHashTable()
+			{
+				ArrayList<Servicio> servicios = setHarvesianDistancesOfServices();
+				for (int i = 0; i < servicios.size(); i++)
+				{
+					RedBlackBST<String , ArrayList<Servicio>> tree = hashTable2c.get(servicios.get(i).getHarvesianDistance());
+					if(tree != null)
+					{
+						ArrayList<Servicio> listk = tree.get(servicios.get(i).getTaxiId());
+						if(listk == null)
+						{
+							listk = new ArrayList<Servicio>();
+							tree.put(servicios.get(i).getTaxiId(), listk);
+							listk = tree.get(servicios.get(i).getTaxiId());
+						}
+						listk.add(servicios.get(i));
+					}
+					else
+					{
+						tree = new RedBlackBST<String,ArrayList<Servicio>>();
+						ArrayList<Servicio> listk = new ArrayList<Servicio>();
+						listk.add(servicios.get(i));
+						tree.put(servicios.get(i).getTaxiId(), listk);
+						listk = tree.get(servicios.get(i).getTaxiId());
+						hashTable2c.put(servicios.get(i).getHarvesianDistance(), tree);
+					}
+				}
+
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			@Override
 			public IList<Servicio> R2C_LocalizacionesGeograficas(String taxiIDReq2C, double millasReq2C, double latitudReq2C, double longitudReq2C) {
 				// TODO Auto-generated method stub
 				return new LinkedSimpleList<Servicio>();
 			}
 
+			//---------------------------------------------------------------------
+			
+			
+			
+			
+			
+			
 			@Override
 			public IList<Servicio> R3C_ServiciosEn15Minutos(String fecha, String hora) {
 				// TODO Auto-generated method stub

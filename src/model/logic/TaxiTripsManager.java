@@ -38,12 +38,14 @@ import model.data_structures.Stack;
 import model.data_structures.SymbolTableLP;
 import model.data_structures.SymbolTableSC;
 import model.logic.utils.ComparatorCompanhiaNumServicios;
+import model.logic.utils.ComparatorHarvesianDistance;
 import model.logic.utils.ComparatorServicioPorFechaHora;
 import model.logic.utils.ComparatorTaxiPorIdAlfabeticamente;
 import model.logic.utils.ComparatorTaxiPorPuntos;
 import model.logic.utils.HeapSort;
 import model.logic.utils.Merge;
 import model.logic.utils.Ordenamiento;
+import model.logic.utils.QuickSort;
 import model.vo.Compania;
 import model.vo.CompaniaServicios;
 import model.vo.CompaniaTaxi;
@@ -572,7 +574,7 @@ taxiActual= new Taxi(taxi_id, company);
 			
 			//------------------------ 2 C----------------------------------------
 			
-			public double[] getDistanceOfReference()
+			public double[] distanciaRef()
 			{
 				double[] distanceRef = new double[2];
 				distanceRef[0] = (sumaLatServicios/numServiciosTotal);
@@ -584,55 +586,57 @@ taxiActual= new Taxi(taxi_id, company);
 			{
 				DecimalFormat format = new DecimalFormat("#.0");
 				final int R = 6371*1000; // Radious of the earth in meters
-				Double latDistance = Math.toRadians(getDistanceOfReference()[0]-lat1);
-				Double lonDistance = Math.toRadians(getDistanceOfReference()[1]-lon1);
+				Double latDistance = Math.toRadians(distanciaRef()[0]-lat1);
+				Double lonDistance = Math.toRadians(distanciaRef()[1]-lon1);
 				Double a = Math.sin(latDistance/2) * Math.sin(latDistance/2) + Math.cos(Math.toRadians(lat1))
-				* Math.cos(Math.toRadians(getDistanceOfReference()[0])) * Math.sin(lonDistance/2) * Math.sin(lonDistance/2);
+				* Math.cos(Math.toRadians(distanciaRef()[0])) * Math.sin(lonDistance/2) * Math.sin(lonDistance/2);
 				Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 				Double distance = R * c * 0.000621371;
 				Double finalDistance =  (Double.parseDouble(format.format(distance).replace(",", ".")));
 				return finalDistance;
 			}
 
-			public ArrayList<Servicio> setHarvesianDistancesOfServices()
+			public ArrayList<Servicio> servicioSetHarvaDistance()
 			{
 				for (int i = 0; i < servicios2.size(); i++) 
 				{
 					servicios2.get(i).setHarvesianDistance(getDistanceHarv(servicios2.get(i).pickup_centroid_latitude, servicios2.get(i).pickup_centroid_longitude));
 				}
-				//OrdenatorP<Servicio> ordenador = new OrdenatorP<Servicio>();
-				//ComparatorHarvesianDistance comparator = new ComparatorHarvesianDistance();
-				//ordenador.ordenar(Ordenamientos.MERGE, true, comparator, servicios);
+				
+				ComparatorHarvesianDistance comparator = new ComparatorHarvesianDistance();
+				
+				QuickSort qs = new QuickSort();
+				qs.quickSort(servicios2, true, comparator);
 
 				return servicios2;
 			}
 
 
-			public void fillHarvesianHashTable()
+			public void tabla2CGenerator()
 			{
-				ArrayList<Servicio> servicios = setHarvesianDistancesOfServices();
+				ArrayList<Servicio> servicios = servicioSetHarvaDistance();
 				for (int i = 0; i < servicios.size(); i++)
 				{
-					RedBlackBST<String , ArrayList<Servicio>> tree = hashTable2c.get(servicios.get(i).getHarvesianDistance());
-					if(tree != null)
+					RedBlackBST<String , ArrayList<Servicio>> arbol2c = hashTable2c.get(servicios.get(i).getHarvesianDistance());
+					if(arbol2c != null)
 					{
-						ArrayList<Servicio> listk = tree.get(servicios.get(i).getTaxiId());
-						if(listk == null)
+						ArrayList<Servicio> listaDeServicios = arbol2c.get(servicios.get(i).getTaxiId());
+						if(listaDeServicios == null)
 						{
-							listk = new ArrayList<Servicio>();
-							tree.put(servicios.get(i).getTaxiId(), listk);
-							listk = tree.get(servicios.get(i).getTaxiId());
+							listaDeServicios = new ArrayList<Servicio>();
+							arbol2c.put(servicios.get(i).getTaxiId(), listaDeServicios);
+							listaDeServicios = arbol2c.get(servicios.get(i).getTaxiId());
 						}
-						listk.add(servicios.get(i));
+						listaDeServicios.add(servicios.get(i));
 					}
 					else
 					{
-						tree = new RedBlackBST<String,ArrayList<Servicio>>();
+						arbol2c = new RedBlackBST<String,ArrayList<Servicio>>();
 						ArrayList<Servicio> listk = new ArrayList<Servicio>();
 						listk.add(servicios.get(i));
-						tree.put(servicios.get(i).getTaxiId(), listk);
-						listk = tree.get(servicios.get(i).getTaxiId());
-						hashTable2c.put(servicios.get(i).getHarvesianDistance(), tree);
+						arbol2c.put(servicios.get(i).getTaxiId(), listk);
+						listk = arbol2c.get(servicios.get(i).getTaxiId());
+						hashTable2c.put(servicios.get(i).getHarvesianDistance(), arbol2c);
 					}
 				}
 
@@ -650,7 +654,7 @@ taxiActual= new Taxi(taxi_id, company);
 			
 			@Override
 			public ArrayList<Servicio> R2C_LocalizacionesGeograficas(String taxiIDReq2C, double millasReq2C) {
-				fillHarvesianHashTable();
+				tabla2CGenerator();
 				try
 				{
 					return hashTable2c.get(millasReq2C).get(taxiIDReq2C);

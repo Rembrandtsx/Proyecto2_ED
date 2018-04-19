@@ -3,6 +3,8 @@ package model.logic;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -257,8 +259,10 @@ taxiActual= new Taxi(taxi_id, company);
 				
 				
 				//1B------------------------------------------------
-				DecimalFormat df = new DecimalFormat("#,0");
-				Double trip_miles1b= Double.parseDouble(df.format(trip_miles));
+				BigDecimal bd = new BigDecimal(trip_miles);
+				bd = bd.setScale(1, RoundingMode.HALF_UP);
+				
+				Double trip_miles1b= bd.doubleValue();
 				
 				if(arbolServiciosXDistancia.contains(trip_miles1b)) {
 					LinkedSimpleList<Servicio> lista = arbolServiciosXDistancia.get(trip_miles1b);

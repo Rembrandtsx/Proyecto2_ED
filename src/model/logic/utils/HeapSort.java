@@ -46,7 +46,7 @@ public class  HeapSort<V extends Comparable<V>>{
 	    	
 	    	TaxiConPuntos actual2= heapB.sink();
 	    	
-	    	for(int i=heapB.size(); i>0;i--){
+	    	for(int i=heapB.size(); i>=0;i--){
 	    		
 	    		a[i]=actual2;
 	    		actual2= heapB.sink();
@@ -60,7 +60,7 @@ public class  HeapSort<V extends Comparable<V>>{
 	    	
 	    	HeapBinario<Servicio> heapB= new HeapBinario(comparador);
 	    	
-	    	for(int j=0; j<a.length;j++){
+	    	for(int j=1; j<a.length;j++){
 	    		
 	    		heapB.swim(a[j]);
 	    		
@@ -68,7 +68,7 @@ public class  HeapSort<V extends Comparable<V>>{
 	    	
 	    	Servicio actual2= heapB.sink();
 	    	
-	    	for(int i=heapB.size()-1; i>=0;i--){
+	    	for(int i=heapB.size(); i>=0;i--){
 	    		
 	    		a[i]=actual2;
 	    		actual2= heapB.sink();

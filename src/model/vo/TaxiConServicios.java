@@ -8,6 +8,7 @@ import model.data_structures.SymbolTableLP;
 import model.data_structures.SymbolTableSC;
 import model.logic.utils.ComparatorServicioPorFechaHora;
 import model.logic.utils.HeapSort;
+import model.logic.utils.Merge;
 
 public class TaxiConServicios implements Comparable<TaxiConServicios>{
 
@@ -15,7 +16,7 @@ public class TaxiConServicios implements Comparable<TaxiConServicios>{
     private String compania;
     private LinkedSimpleList<Servicio> servicios;
     private SymbolTableLP<Integer, LinkedSimpleList<Servicio>> misServicios;
-    
+    private Merge<Servicio> mergeS;
     private HeapSort<Servicio> heapSortS;
 
 
@@ -25,6 +26,7 @@ public class TaxiConServicios implements Comparable<TaxiConServicios>{
         this.servicios= new LinkedSimpleList<>();
         this.misServicios = new SymbolTableLP<>(59); //Numero primo
 		this.heapSortS= new HeapSort<>();
+		this.mergeS= new Merge<>();
         // this.servicios = new List<Service>(); // inicializar la lista de servicios 
     }
 
@@ -60,9 +62,7 @@ public class TaxiConServicios implements Comparable<TaxiConServicios>{
 	}
     public void setServiciosHashTable(Integer i, Servicio actual) {
     	
-    	if("eb0f2345fdcb97ed52105cd4044ae6e3302eb4253ff9d804a0315deee7dc96462c233ee45be74d33d1560159854cef22fb70868070a162172d52876392cc948c".equals(actual.getTaxiId())&&actual.pickup_community_area==28){
-			System.out.println( actual.id);
-		}
+    	
     	if(misServicios.get(i)==null){
     		
     		LinkedSimpleList<Servicio> temporal= new LinkedSimpleList<>();
@@ -76,14 +76,14 @@ public class TaxiConServicios implements Comparable<TaxiConServicios>{
     	
     	Servicio[] ordenar= new Servicio[misServicios.get(i).size()+1];
     	for(int j=0; j< misServicios.get(i).size();j++){
-    		ordenar[j]= misServicios.get(i).get(j);
+    		ordenar[j+1]= misServicios.get(i).get(j);
     	}
     	
     	heapSortS.heapSortAscendentemente(ordenar, new ComparatorServicioPorFechaHora());
     	
     	LinkedSimpleList<Servicio> nuevo= new LinkedSimpleList<>();
     	
-    	for(int j=0; j<misServicios.get(i).size();j++){
+    	for(int j=1; j<misServicios.get(i).size()+1;j++){
     		
     		nuevo.add(ordenar[j]);
     	}
@@ -100,6 +100,7 @@ public class TaxiConServicios implements Comparable<TaxiConServicios>{
     public void print(){
         System.out.println(Integer.toString(numeroServicios())+" servicios "+" Taxi: "+taxiId);
         Servicio s=null;
+       
         
         for(int i=0; i<servicios.size();i++){
         	//Agregado try para requerimientos

@@ -3,12 +3,10 @@ package model.data_structures;
 import java.util.Iterator;
 
 public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>, IList<T>, Comparable<LinkedSimpleList<T>>,  Iterator<T>{
-
 	private SimpleNode<T> first;
 	private SimpleNode<T> actual;
 	private SimpleNode<T> lastNode;
 	private int size;
-	private int p;
 	
 	public LinkedSimpleList() {
 		// TODO Auto-generated constructor stub
@@ -16,7 +14,6 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 		actual=null;
 		lastNode=null;
 		size=0;
-		p=0;
 	}
 	@Override 
 	public void add(T element) {
@@ -97,7 +94,7 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 					}
 					
 				else{
-					this.avanzar();
+					next();
 				}
 				
 			}
@@ -116,7 +113,7 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 				if(actual.getElement()!=null&&actual.getElement().compareTo(element)==0){
 					return actual.getElement();
 				}
-				this.avanzar();
+				next();
 			}
 		}
 		return null;
@@ -141,7 +138,7 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 				}
 				else{
 					count++;
-					this.avanzar();
+					next();
 				}
 			}
 		}
@@ -187,8 +184,8 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 		while(actual!=null){
 			list[count]=this.actual.getElement();
 			count++;
-			this.avanzar();
-			
+			this.next();
+			System.out.println(count);
 		}
 			return list;
 			
@@ -196,7 +193,6 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 	
 	public void listing() {
 		// TODO Auto-generated method stub
-		p=0;
 		actual = first;
 	}
 	public SimpleNode<T> getCurrentNode() {
@@ -226,7 +222,34 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 		actual = actual.getNext();
 	}
 
+	@Override
+	public T next() {
+		// TODO Auto-generated method stub
+		actual= actual.getNext();
+		
+		if(actual!=null){
+			return actual.getElement();
+		}
+		else
+			return null;
+	}
 	
+
+	@Override
+	public boolean hasNext() {
+		// TODO Auto-generated method stub
+		if(actual==null){
+			
+			return false;
+		}
+		else{
+			boolean rta=false;
+			if(actual.getNext()!=null){
+				rta=false;
+			}
+			return rta;
+		}
+	}
 	public void setFirst(SimpleNode<T> pfirst)
 	{
 		first= pfirst;
@@ -259,7 +282,7 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 				}
 				else{
 					count++;
-					this.avanzar();
+					next();
 				}
 			}
 		}
@@ -280,7 +303,7 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 				}
 				else{
 					count++;
-					this.avanzar();
+					next();
 				}
 			}
 			
@@ -288,7 +311,6 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 		if(first==null&&position==0){
 			first= new SimpleNode<T>(element);
 			size++;
-			return true;
 		}
 		return false;
 	}
@@ -298,44 +320,16 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
 	@Override
-	public T next() {
-		// TODO Auto-generated method stub
-		if(p==0){
-			p++;
-			return actual.getElement();
-		}
-		p++;
-		actual= actual.getNext();
-		
-		if(actual!=null){
-			return actual.getElement();
-		}
-		else
-			return null;
-	}
-	
-
-	@Override
-	public boolean hasNext() {
-		// TODO Auto-generated method stub
-		if(actual==null){
-			
-			return false;
-		}
-		else{
-			boolean rta=false;
-			if(actual.getNext()!=null){
-				rta=false;
-			}
-			return rta;
-		}
-	}
 	public Iterator<T> iterator() {
-		// TODO Auto-generated method stub
-		return (Iterator<T>) this;
+		 // TODO Auto-generated method stub
+			  return (Iterator<T>) this;
+			
 	}
+	
+	
 
 
 }
+
+

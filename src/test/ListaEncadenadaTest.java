@@ -48,10 +48,11 @@ public class ListaEncadenadaTest extends TestCase
     private void setupEscenario3( )
     {
     	lista = new LinkedSimpleList<String>();
-        size = 10;
+        size = 100;
         for( int cont = 0; cont < size; cont++ )
         {
-            lista.add( "text 1");
+        	String s = "text "+cont;
+            lista.add(s);
         }
     }
 
@@ -190,5 +191,17 @@ public class ListaEncadenadaTest extends TestCase
         assertEquals( "El tamaño de la lista no es el correcto", size-1, lista.size( ) );
      
     }
+    
+    public void test1( )
+    {
+        setupEscenario3( );
+        
+       for (String string : lista) {
+    	   System.out.println(string);
+       }
+		
+     
+    }
+    
 
 }

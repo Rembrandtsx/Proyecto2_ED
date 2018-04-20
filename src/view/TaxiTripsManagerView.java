@@ -264,8 +264,8 @@ case 2: //1A
 				
 				for(int i= 0; i<listaServicios3.size();i++){
 					System.out.println("Id Trip: "+ listaServicios3.get(i).getTripId());
-					System.out.println("  Zona recogida: " + listaServicios3.get(i).getPickupZone());
-					System.out.println("  Zona terminacion: " + listaServicios3.get(i).getDropOffZone());
+					System.out.println("  Zona recogida: " + listaServicios3.get(i).pickup_community_area);
+					System.out.println("  Zona terminacion: " + listaServicios3.get(i).dropoff_community_area);
 					try {
 						System.out.println("  Hora inicial: " + listaServicios3.get(i).getStartTime());
 					} catch (ParseException e) {

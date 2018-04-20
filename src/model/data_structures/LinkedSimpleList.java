@@ -323,8 +323,28 @@ public class LinkedSimpleList<T extends Comparable<T>> implements ILinkedList<T>
 	@Override
 	public Iterator<T> iterator() {
 		 // TODO Auto-generated method stub
-			  return (Iterator<T>) this;
+			  return (Iterator<T>) new linkedListIterator();
 			
+	}
+	
+	class linkedListIterator implements Iterator<T>{
+		private SimpleNode actual= first;
+		@Override
+		public boolean hasNext() {
+			if(actual==null){
+				return false;
+			}
+			return true;
+		}
+
+		@Override
+		public T next() {
+			SimpleNode act = actual;
+			actual=actual.getNext();
+			return (T) act.getElement();
+		}
+
+		
 	}
 	
 	
